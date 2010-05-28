@@ -1,4 +1,4 @@
-package edu.src.lngamesml;
+package  edu.cglr.lngamesml;
 
 /**
  * Created by IntelliJ IDEA.
@@ -9,7 +9,7 @@ package edu.src.lngamesml;
  */
 public class Main {
 
-    public static void main (String [] args){
-        
+    public static void main(String[] args) {
+
     }
 }
