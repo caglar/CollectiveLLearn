@@ -11,12 +11,25 @@ package edu.cglr.lngamesml;
 import edu.cglr.lngamesml.agents.Agent;
 import edu.cglr.lngamesml.agents.GraphLink;
 import edu.cglr.lngamesml.agents.SimpleAgent;
+import edu.cglr.lngamesml.core.InstanceList;
+import edu.cglr.lngamesml.data.FileLoaderFactory;
+import edu.cglr.lngamesml.data.Partitioner;
+import edu.cglr.lngamesml.data.sample.Bootstrap;
+import edu.cglr.lngamesml.data.sample.Sampling;
 import edu.cglr.lngamesml.utils.random.MersenneTwister;
 import edu.cglr.lngamesml.graphs.jung.AnimatedGraphView;
 import edu.cglr.lngamesml.graphs.jung.SimpleGraphView;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import weka.classifiers.bayes.BayesNet;
+import weka.core.Attribute;
+import weka.core.Instance;
+import weka.core.Instances;
 
 import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.*;
 
@@ -71,6 +84,7 @@ public class Test {
         frame.setVisible(true);
 
     }
+
 /*
     public static void testSimpleGraphView2 () {
         SimpleGraphView2 sgv = new SimpleGraphView2();
@@ -89,6 +103,7 @@ public class Test {
         frame.setVisible(true);
     }
   */
+    
     public static void testAnimatedGraphView () {
         AnimatedGraphView animatedGraphView = new AnimatedGraphView();
         animatedGraphView.prepareGraphView();
@@ -127,8 +142,87 @@ public class Test {
         frame.setVisible(true);
     }
 
+    public static void testBootstrap () {
+        Bootstrap part = new Bootstrap("/home/caglar/Dataset/Day1.TCP.arff", 10);
+        Instances parts[] = part.partitionDataset("/home/caglar/Dataset/Day1.TCP.arff", 10);
+        System.out.println(parts.length);
+        System.out.println(parts[0].size());
+        System.out.println(parts[1].size());
+        System.out.println(parts[2].size());
+        System.out.println(parts[3].size());
+        System.out.println(parts[4].size());
+        System.out.println(parts[5].size());
+        System.out.println(parts[6].size());
+        System.out.println(parts[7].size());
+    }
+
+    public static void testSampling () {
+        Sampling part = new Sampling("/home/caglar/Dataset/Day1.TCP.arff", 10);
+        InstanceList parts[] = part.partitionDataset();
+        System.out.println(parts.length);
+        System.out.println(parts[0].size());
+        System.out.println(parts[1].size());
+        System.out.println(parts[2].size());
+        System.out.println(parts[3].size());
+        System.out.println(parts[4].size());
+        System.out.println(parts[5].size());
+        System.out.println(parts[6].size());
+        System.out.println(parts[7].size());
+        System.out.println(parts[8].size());
+        System.out.println(parts[9].size());
+    }
+
+    public static void testWeights()
+    {
+        String dataset = "/home/caglar/Dataset/Day1.TCP.arff";
+        Instances data = FileLoaderFactory.loadFile(dataset);
+        for (Instance inst: data) {
+            if(inst.weight() > 1 || inst.weight() < 0){
+                System.out.println("Fuck");
+            }
+            System.out.println(inst.weight());
+        }
+    }
+
+    public static void testInstances () {
+        String dataset = "/home/caglar/Dataset/Day1.TCP.arff";
+        Instances data = FileLoaderFactory.loadFile(dataset);
+        ArrayList <Attribute>arrList = new ArrayList<Attribute>();
+        for (int i = 0; i < data.numAttributes(); i++) {
+            arrList.add(data.attribute(i));
+        }
+        Instances insts = new Instances("test", arrList, data.numInstances()/3);
+        /*try {
+            inst = new Instances(new FileReader(dataset));
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } */
+        insts.add(data.instance(0));
+        System.out.println(insts);
+    }
+
+    public static void testBayesNet () {
+        BayesNet bayNet = new BayesNet();
+        String dataset = "/home/caglar/Dataset/Day1.TCP.arff";
+        //Instances data = FileLoaderFactory.loadFile(dataset);
+        Sampling sampler = new Sampling(dataset, 10);
+        InstanceList []instList = sampler.partitionDataset();
+        try {
+            bayNet.buildClassifier(instList[0].getInstances(sampler.getRelation(), sampler.getAList()));
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        double bayScore = bayNet.measureBayesScore();
+        System.out.println (bayScore);
+    }
+
     public static void main (String [] args)
     {
-        testAnimatedGraphView();
+        //testAnimatedGraphView();
+        //testBootstrap();
+        //testSampling();
+        //testWeights();
+        //testInstances();
+        testBayesNet();
     }
 }

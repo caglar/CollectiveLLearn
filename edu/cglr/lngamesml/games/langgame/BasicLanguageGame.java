@@ -16,16 +16,16 @@ public class BasicLanguageGame extends Game {
     }
     @Override
     public void createAgents(String[] trainingDatasets, String testDataset) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        
     }
 
     @Override
     public void setAgentsOnGraph(int x, int y) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     @Override
     public void playGames(int testDatasetSize) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        
     }
 }
