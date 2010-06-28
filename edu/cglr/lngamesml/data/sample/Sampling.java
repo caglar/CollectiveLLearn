@@ -2,12 +2,10 @@ package edu.cglr.lngamesml.data.sample;
 
 import edu.cglr.lngamesml.core.InstancesList;
 import edu.cglr.lngamesml.data.FileLoaderFactory;
-import edu.cglr.lngamesml.utils.random.MersenneTwister;
 import edu.cglr.lngamesml.utils.random.WeightedRandomNumberGen;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.filters.supervised.instance.SMOTE;
 
 import java.util.ArrayList;
 
@@ -18,6 +16,7 @@ import java.util.ArrayList;
  * Time: 7:12:33 PM
  * To change this template use File | Settings | File Templates.
  */
+
 public class Sampling {
     private String Dataset;
     private int NoOfPartitions;

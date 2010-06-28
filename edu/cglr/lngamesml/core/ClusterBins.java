@@ -1,5 +1,6 @@
 package edu.cglr.lngamesml.core;
 
+import edu.cglr.lngamesml.data.sample.ClassHistogram;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -14,22 +15,21 @@ import java.util.Hashtable;
  * Time: 4:42:58 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ClassHistogram {
-
+public class ClusterBins {
 
     public Hashtable <Integer, Instances>InstsClasses;
     public int ClassesInstsMap[][];
     public int NoOfClasses;
     public int NoOfClusters;
     private int ClusterInstancesRatio;
-    public ArrayList <Integer>BestClassesForClusters;
+    public ClassHistogram BestClassesForClusters;
 
-    public ClassHistogram (int noOfClasses, int noOfClusters) {
+    public ClusterBins (int noOfClasses, int noOfClusters) {
         NoOfClasses = noOfClasses;
         NoOfClusters = noOfClusters;
         ClusterInstancesRatio = 2;
         ClassesInstsMap = new int[noOfClusters][noOfClasses];
-        BestClassesForClusters = new ArrayList<Integer>();
+        BestClassesForClusters = new ClassHistogram(noOfClasses);
         InstsClasses = new Hashtable<Integer, Instances>();
     }
 
@@ -38,9 +38,8 @@ public class ClassHistogram {
         if (instances == null || instances.numInstances() == 0) {
             throw new NullPointerException("Instances for hi can't be empty!");
         }
-        InstancesList iList = new InstancesList(NoOfClasses);
         for (Instance inst: instances) {
-            iList.add((int)inst.classValue(), inst);
+            BestClassesForClusters.addInstance((int) inst.classValue(), inst);
         }
     }
 

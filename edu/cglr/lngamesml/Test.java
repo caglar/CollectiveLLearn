@@ -11,9 +11,8 @@ package edu.cglr.lngamesml;
 import edu.cglr.lngamesml.agents.Agent;
 import edu.cglr.lngamesml.agents.GraphLink;
 import edu.cglr.lngamesml.agents.SimpleAgent;
-import edu.cglr.lngamesml.core.InstanceList;
+import edu.cglr.lngamesml.core.InstancesList;
 import edu.cglr.lngamesml.data.FileLoaderFactory;
-import edu.cglr.lngamesml.data.Partitioner;
 import edu.cglr.lngamesml.data.sample.Bootstrap;
 import edu.cglr.lngamesml.data.sample.Sampling;
 import edu.cglr.lngamesml.utils.random.MersenneTwister;
@@ -26,9 +25,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.*;
@@ -158,7 +154,7 @@ public class Test {
 
     public static void testSampling () {
         Sampling part = new Sampling("/home/caglar/Dataset/Day1.TCP.arff", 10);
-        InstanceList parts[] = part.partitionDataset();
+        InstancesList parts[] = part.partitionDataset();
         System.out.println(parts.length);
         System.out.println(parts[0].size());
         System.out.println(parts[1].size());
@@ -206,9 +202,9 @@ public class Test {
         String dataset = "/home/caglar/Dataset/Day1.TCP.arff";
         //Instances data = FileLoaderFactory.loadFile(dataset);
         Sampling sampler = new Sampling(dataset, 10);
-        InstanceList []instList = sampler.partitionDataset();
+        InstancesList []instList = sampler.partitionDataset();
         try {
-            bayNet.buildClassifier(instList[0].getInstances(sampler.getRelation(), sampler.getAList()));
+            bayNet.buildClassifier(instList[0].getInstances(sampler.getRelation()));
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
