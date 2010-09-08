@@ -1,6 +1,6 @@
 package edu.cglr.lngamesml.data.cluster;
 
-import edu.cglr.lngamesml.core.InstanceList;
+import edu.cglr.lngamesml.core.InstancesList;
 import weka.core.Instances;
 
 /**
@@ -17,7 +17,7 @@ public class KMeansCluster {
         NoOfClusters = noOfClusters;
     }
 
-    public InstanceList[] getClusters(Instances data) {
+    public InstancesList[] getClusters(Instances data) {
         return null;
     }
 }

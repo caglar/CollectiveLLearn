@@ -11,7 +11,7 @@ import weka.core.Instances;
  * Time: 7:03:26 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SupervisedLearner implements Learning{
+public class SupervisedLearner implements Learning {
 
     /**
     @TODO

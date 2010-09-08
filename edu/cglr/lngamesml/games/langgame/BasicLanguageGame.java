@@ -14,6 +14,7 @@ public class BasicLanguageGame extends Game {
     public BasicLanguageGame () {
         
     }
+    
     @Override
     public void createAgents(String[] trainingDatasets, String testDataset) {
         

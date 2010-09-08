@@ -219,6 +219,6 @@ public class Test {
         //testSampling();
         //testWeights();
         //testInstances();
-        testBayesNet();
+        //testBayesNet();
     }
 }

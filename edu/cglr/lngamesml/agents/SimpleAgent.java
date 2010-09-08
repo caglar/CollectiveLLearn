@@ -1,6 +1,7 @@
 package edu.cglr.lngamesml.agents;
 
-import edu.cglr.lngamesml.agents.learning.Learner;
+
+import edu.cglr.lngamesml.agents.learning.SupervisedLearner;
 import edu.cglr.lngamesml.agents.lexicon.Lexicon;
 import edu.cglr.lngamesml.agents.lexicon.SimpleLexicon;
 
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class SimpleAgent extends Agent
 {
-    private Learner LearningAlgorithm;
+    private SupervisedLearner LearningAlgorithm;
     private String TrainingDataset;
     private String TestDataset;
     private String FocusedCategory = "";
@@ -35,14 +36,14 @@ public class SimpleAgent extends Agent
 
     @Override
     public void initLearner(LearnerTypes learningAlgorithm) {
-        Learner learner = new Learner(learningAlgorithm);
+        SupervisedLearner learner = new SupervisedLearner(learningAlgorithm);
     }
     
-    public Learner getLearningAlgorithm() {
+    public SupervisedLearner getLearningAlgorithm() {
         return LearningAlgorithm;
     }
 
-    public void setLearningAlgorithm(Learner learningAlgorithm) {
+    public void setLearningAlgorithm(SupervisedLearner learningAlgorithm) {
         LearningAlgorithm = learningAlgorithm;
     }
 
