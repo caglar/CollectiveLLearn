@@ -82,7 +82,7 @@ public class ClassClusterConfidenceLGame extends ConfidenceLGame {
             for (int i = 0; i < NoOfAgents; i++) {
                 if (agentInstances[i] != null) {
                     Collections.shuffle(agentInstances[i]);
-                    BasicCognitiveAgent agent = new BasicCognitiveAgent(LType);
+                    BasicCognitiveAgent agent = new BasicCognitiveAgent(LType, null);
                     Instances learningData = agentInstances[i];
                     agent.setId(i);
                     agent.learnFromData(learningData);
@@ -111,7 +111,7 @@ public class ClassClusterConfidenceLGame extends ConfidenceLGame {
                     for (int i = 0; i < NoOfAgents; i++) {
                         BasicCognitiveAgent agent = null;
                         if (Agents.size() < NoOfAgents) {
-                            agent = new BasicCognitiveAgent(LType);
+                            agent = new BasicCognitiveAgent(LType, null);
                             agent.setId(i);
                         } else {
                             agent = (BasicCognitiveAgent) Agents.get(i);

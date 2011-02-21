@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package edu.metu.lngamesml.stats;
+package edu.metu.lngamesml.stats.nosql;
 
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;

@@ -75,7 +75,7 @@ public class ClassClusterMajorityVoting extends MajorityVoting {
                 if (agentInstances[i] != null) {
                     Collections.shuffle(agentInstances[i]);
                     WithDrawnAgent agent = new WithDrawnAgent();
-                    agent.setLearningType(LType);
+                    agent.setLearningType(LType, null);
                     agent.setAgentId(i);
                     Instances learningData = agentInstances[i];
                     agent.learnFromData(learningData);

@@ -10,21 +10,19 @@ import edu.metu.lngamesml.data.ConfidenceEstimator;
 import edu.metu.lngamesml.data.FileLoaderFactory;
 import edu.metu.lngamesml.data.sample.WeightedSampling;
 import edu.metu.lngamesml.eval.classification.BasicClassificationEvaluator;
-import edu.metu.lngamesml.eval.game.AgentsIndividualPerf;
 import edu.metu.lngamesml.eval.game.BasicGameEvaluator;
 import edu.metu.lngamesml.games.Convergence;
 import edu.metu.lngamesml.games.LGame;
-import edu.metu.lngamesml.stats.Game;
-import edu.metu.lngamesml.stats.game.RunningAgentStat;
-import edu.metu.lngamesml.stats.game.RunningStat;
-import edu.metu.lngamesml.stats.game.Stat;
-import edu.metu.lngamesml.utils.StopWatch;
+import edu.metu.lngamesml.stats.nosql.Game;
+import edu.metu.lngamesml.stats.nosql.game.AgentStat;
+import edu.metu.lngamesml.stats.nosql.game.RunningAgentStat;
+import edu.metu.lngamesml.stats.nosql.game.RunningStat;
+import edu.metu.lngamesml.stats.nosql.game.Stat;
 import edu.metu.lngamesml.utils.log.Logging;
 import edu.metu.lngamesml.utils.random.MersenneTwister;
 
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.pmml.Array;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +48,9 @@ public class BasicLanguageGame implements LGame {
     protected BasicGameEvaluator BGEval = null;
     protected boolean UseBeliefUpdates = false;
     protected boolean UseMStatsDb = false;
-    protected Game MGame = null;
+    protected Game MGame = new Game();
     private final String GameName = "BasicLanguageGame";
+    protected double Accuracy = 0.0;
 
     public BasicLanguageGame() {
         NoOfAgents = 10;
@@ -111,7 +110,7 @@ public class BasicLanguageGame implements LGame {
         InstancesList[] dataList = wSampling.partitionDataset();
         if (LType != null) {
             for (int i = 0; i < NoOfAgents; i++) {
-                BasicCognitiveAgent agent = new BasicCognitiveAgent(LType);
+                BasicCognitiveAgent agent = new BasicCognitiveAgent(LType, null);
                 Instances learningData = dataList[i].getInstances();
                 agent.setId(i);
                 agent.learnFromData(learningData);
@@ -147,9 +146,21 @@ public class BasicLanguageGame implements LGame {
         }
     }
 
-    protected void addRunningAgentStats2Game(List<RunningAgentStat> runningAgentStats){
+    protected void addRunningAgentStatsToGame(List<RunningAgentStat> runningAgentStats){
         for(RunningAgentStat rAgentStat: runningAgentStats){
             MGame.addRunningAgentStats(rAgentStat);
+        }
+    }
+
+    protected void addRunningAgentStatsToAgentStats(List<RunningAgentStat> runningAgentStats){
+        for(RunningAgentStat rAgentStat: runningAgentStats){
+            AgentStat agentStat = new AgentStat();
+            agentStat.setAgentID(rAgentStat.getAgentId());
+            agentStat.setNoOfFails(rAgentStat.getNoOfFails());
+            agentStat.setNoOfSuccess(rAgentStat.getNoOfSuccess());
+            agentStat.setAccuracy(rAgentStat.getCurrentAccuracy());
+            //agentStat.setValidationAccuracy(Confidences[rAgentStat.getAgentId()]);
+            MGame.addAgentStats(agentStat);
         }
     }
 
@@ -167,34 +178,37 @@ public class BasicLanguageGame implements LGame {
         stat.setAccuracy(accuracy);
         stat.setNoOfFails(noOfFails);
         stat.setNoOfSucesses(noOfSuccesses);
-        MGame.addStats(stat);
+        MGame.setStats(stat);
 
     }
 
     @Override
     public void playGames(String testDataset) throws Exception {
+        System.gc();
+        //StopWatch sWatch = new StopWatch();
+        BasicCognitiveAgent bcaSpeaker;
+        BasicCognitiveAgent bcaHearer;
+        Convergence convergence = new Convergence(NoOfAgents);
+        BasicClassificationEvaluator bcEval = new BasicClassificationEvaluator();
 
         Instances testInstances = FileLoaderFactory.loadFile(testDataset);
         int noOfTestInstances = testInstances.numInstances();
 
-        BasicCognitiveAgent bcaSpeaker;
-        BasicCognitiveAgent bcaHearer;
-        setGameProps(testDataset, GameName);
-
-        BasicClassificationEvaluator bcEval = new BasicClassificationEvaluator();
-
         BGEval = new BasicGameEvaluator(NoOfAgents, noOfTestInstances);
 
-        Convergence convergence = new Convergence(NoOfAgents);
         Instance currentContext = null;
         CategoricalComm currentClassVal = null;
         boolean isSuccess = false;
 
+        int noOfSuccess = 0;
+        int noOfFails = 0;
+
         List<RunningAgentStat> rAgentStats = new ArrayList<RunningAgentStat>();
-        RunningStat rStat = new RunningStat();
-        Stat stat = new Stat();
-        StopWatch sWatch = new StopWatch();
-        sWatch.startTimer();
+        //RunningStat rStat = new RunningStat();
+        //Stat stat = new Stat();
+
+        //sWatch.startTimer();
+        setGameProps(testDataset, GameName);
 
         for (int i = 0; i < noOfTestInstances; i++) {
             convergence.emptyTable();
@@ -210,7 +224,7 @@ public class BasicLanguageGame implements LGame {
                 CategoricalComm hearerCat = bcaHearer.speak(currentContext);
                 if (!speakerCat.equals(hearerCat)) {
                     addFailuresToAgentStats(rAgentStats.get(bcaSpeaker.getId()), rAgentStats.get(bcaHearer.getId()));
-                    rStat.incrementNoOfFails();
+//                    rStat.incrementNoOfFails();
                     isSuccess = false;
                     convergence.balanceTable(speakerCat, hearerCat);
                     if (UseBeliefUpdates) {
@@ -218,27 +232,37 @@ public class BasicLanguageGame implements LGame {
                         BeliefUpdaterFactory.updateBeliefs(speakerCat, hearerCat, false);
                     }
                     Agents.get(bcaHearer.getId()).hear(speakerCat);
+                    noOfFails++;
                 } else {
                     addSuccessToAgentStats(rAgentStats.get(bcaSpeaker.getId()), rAgentStats.get(bcaHearer.getId()));
-                    rStat.incrementNoOfSuccesses();
+//                    rStat.incrementNoOfSuccesses();
                     if (UseBeliefUpdates) {
                         BeliefUpdaterFactory.init();
                         BeliefUpdaterFactory.updateBeliefs(speakerCat, hearerCat, false);
                     }
+                    noOfSuccess++;
                 }
-                rStat.setTimestep(sWatch.getDuration());
-                rStat.setNoOfItemsProcessed(i);
+                //testInstances.remove(currentContext);
+                //rStat.setTimestep(sWatch.getDuration());
+//                rStat.setNoOfItemsProcessed(i);
                 BGEval.addMeasurements(bcaSpeaker.getId(), bcaHearer.getId(), i, isSuccess);
             }
-            MGame.addRunningStat(rStat);
-            addRunningAgentStats2Game(rAgentStats);
+            //MGame.addRunningStat(rStat);
+            //addRunningAgentStatsToGame(rAgentStats);
             currentClassVal = convergence.getConvergedCategory();
             bcEval.addPerformanceObservation(currentClassVal, currentContext);
-            rStat.setAccuracy(bcEval.getAccuracyPercent());
+//            rStat.setAccuracy(bcEval.getAccuracyPercent());
             prepareForNewGame();
         }
-        addStatToGame(stat,bcEval.getAccuracyPercent(), rStat.getNoOfFails(), rStat.getNoOfSuccesses());
-        sWatch.stopTimer();
+        //System.out.println(bcEval.getPerformanceMetrics());
+        //System.out.println("Total Number of failures:" + noOfFails);
+        //System.out.println("Total Number of successes:" + noOfSuccess);
+        double avgTime = (double)(noOfFails+noOfSuccess)/(double)noOfTestInstances;
+        //System.out.println("Average time: " + avgTime);
+        Accuracy = bcEval.getAccuracyPercent();
+        //addRunningAgentStatsToAgentStats(rAgentStats);
+//        addStatToGame(stat,bcEval.getAccuracyPercent(), rStat.getNoOfFails(), rStat.getNoOfSuccesses());
+        //sWatch.stopTimer();
     }
 
     public BasicGameEvaluator getBasicGameEval() {
@@ -246,6 +270,10 @@ public class BasicLanguageGame implements LGame {
             BGEval = new BasicGameEvaluator(0,0);
         }
         return BGEval;
+    }
+
+    public double getAccuracy() {
+        return Accuracy;
     }
 
     @Override

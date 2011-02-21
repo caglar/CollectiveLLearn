@@ -5,8 +5,9 @@ import edu.metu.lngamesml.alt.ClassClusterMajorityVoting;
 import edu.metu.lngamesml.alt.MajorityVoting;
 import edu.metu.lngamesml.games.langgame.BasicLanguageGame;
 import edu.metu.lngamesml.games.langgame.conflanggame.*;
-import edu.metu.lngamesml.stats.MongoGameStatsFactory;
-import edu.metu.lngamesml.stats.TestSet;
+import edu.metu.lngamesml.stats.nosql.Game;
+import edu.metu.lngamesml.stats.nosql.MongoGameStatsFactory;
+import edu.metu.lngamesml.stats.nosql.TestSet;
 import edu.metu.lngamesml.utils.log.Logging;
 
 import java.net.UnknownHostException;
@@ -55,20 +56,29 @@ public class GameEngineX {
     }
 
     public static void startBasicLanguageGame(boolean useBeliefUpdates) {
-        String trainingDataset ="/home/caglar/Dataset/Day1.TCP.arff";//"/home/caglar/Codes/bash/mnist_convert/mnist_train.arff";
-        String testDataset = "/home/caglar/Dataset/Day3.TCP.arff";//"/home/caglar/Codes/bash/mnist_convert/mnist_test.arff";
+        String trainingDataset ="/home/caglar/Dataset/Day1_50.TCP.arff";
+        String testDataset = "/home/caglar/Dataset/Day2_25.TCP.arff";
         int noOfAgents = 10;
         int samplingRatio = 10;
         Logging.info("=============BasicLanguageGame Simulation have started================");
         Logging.info("Agents are being created");
         BasicLanguageGame bLangGame = new BasicLanguageGame(noOfAgents, samplingRatio);
         bLangGame.setUseBeliefUpdates(true);
+        bLangGame.setUseConfidences(false);
         bLangGame.setLearningType(LearnerTypes.C45);
         bLangGame.createAgents(trainingDataset);
         Logging.info("Agents are created");
         try {
             Logging.info("The game has started");
+            MongoGameStatsFactory.initGame();
+            TestSet testSet = new TestSet();
+            testSet.setTestNo(1);
+            testSet.startTestset();
             bLangGame.playGames(testDataset);
+            Game game = bLangGame.getGame();
+            testSet.addGame(game);
+            testSet.endTestSet();
+            MongoGameStatsFactory.addTestSetToDB(testSet);
             Logging.info("The game has ended");
         } catch (Exception e) {
             Logging.log(Level.SEVERE, e.getMessage());
@@ -187,13 +197,12 @@ public class GameEngineX {
     }
 
     public static void main(String[] args) throws UnknownHostException {
-        MongoGameStatsFactory.initGame();
-        TestSet tests = new TestSet();
-        tests.setTestNo(1);
-        tests.startTestset();
-        //tests.addGame();
-
-        tests.endTestSet();
-        MongoGameStatsFactory.addTestSetToDB(tests);
+        //MongoGameStatsFactory.initGame();
+        //TestSet tests = new TestSet();
+        //tests.setTestNo(1);
+        //tests.startTestset();
+        startBasicLanguageGame(true);
+        //tests.endTestSet();
+        //MongoGameStatsFactory.addTestSetToDB(tests);
     }
 }

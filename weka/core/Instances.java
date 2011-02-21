@@ -1005,6 +1005,7 @@ public class Instances extends AbstractList<Instance>
   //@ requires index < numInstances();
   public Instance remove(int index) {
 
+
     return m_Instances.remove(index);
   }
 

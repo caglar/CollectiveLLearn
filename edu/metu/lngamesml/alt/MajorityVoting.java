@@ -28,6 +28,7 @@ public class MajorityVoting {
     protected int SamplingRatio;
     protected ArrayList<WithDrawnAgent> Agents = new ArrayList<WithDrawnAgent>();
     protected LearnerTypes LType;
+    protected double Accuracy = 0.0;
 
     public MajorityVoting() {
         NoOfAgents = 10;
@@ -59,7 +60,7 @@ public class MajorityVoting {
         if (LType != null) {
             for (int i = 0; i < NoOfAgents; i++) {
                 WithDrawnAgent agent = new WithDrawnAgent();
-                agent.setLearningType(LType);
+                agent.setLearningType(LType, null);
                 Instances learningData = dataList[i].getInstances();
                 agent.setAgentId(i);
                 agent.learnFromData(learningData);
@@ -68,6 +69,10 @@ public class MajorityVoting {
         } else {
             throw new NullPointerException("Learner Type can't be null!");
         }
+    }
+
+    public double getAccuracy() {
+        return Accuracy;
     }
 
     public void setLearningType(LearnerTypes lType) {
@@ -99,7 +104,8 @@ public class MajorityVoting {
             electedClass.setComStatement(currentContext.stringValue(currentContext.classIndex()));
             bcEval.addPerformanceObservation(electedClass, currentContext);
         }
-        System.out.println("Accuracy is " + bcEval.getAccuracyPercent());
-        System.out.println("No of Failed Observations " + bcEval.getNoOfFailedObservations());
+        //System.out.println("Accuracy is " + bcEval.getAccuracyPercent());
+        //System.out.println("No of Failed Observations " + bcEval.getNoOfFailedObservations());
+        Accuracy = bcEval.getAccuracyPercent();
     }
 }

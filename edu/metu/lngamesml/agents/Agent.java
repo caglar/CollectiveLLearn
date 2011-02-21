@@ -18,7 +18,7 @@ public abstract class Agent {
 
     public abstract void hear(CategoricalComm catComm);
 
-    public abstract void setLearningType(LearnerTypes learningAlgorithm);
+    public abstract void setLearningType(LearnerTypes learningAlgorithm, String []options);
 
     public abstract void setId(int id);
 

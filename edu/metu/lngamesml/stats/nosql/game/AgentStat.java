@@ -3,11 +3,9 @@
  * and open the template in the editor.
  */
 
-package edu.metu.lngamesml.stats.game;
+package edu.metu.lngamesml.stats.nosql.game;
 
 import com.google.code.morphia.annotations.Embedded;
-import com.google.code.morphia.annotations.Transient;
-import edu.metu.lngamesml.eval.game.AgentsIndividualPerf;
 
 /**
  *
@@ -21,7 +19,8 @@ public class AgentStat {
     private int AgentID = 0;
     private int NoOfFails = 0;
     private int NoOfSuccess = 0;
-    private double ValidationAccuracy = 0;
+    private double ValidationAccuracy = 0.0;
+    private double Accuracy = 0.0;
 
     public int getAgentID() {
         return AgentID;
@@ -55,7 +54,11 @@ public class AgentStat {
         this.ValidationAccuracy = ValidationAccuracy;
     }
 
-    public void addDecision(int agentNo, int agLabel, int trueLabel){
+    public double getAccuracy() {
+        return Accuracy;
+    }
 
+    public void setAccuracy(double accuracy) {
+        Accuracy = accuracy;
     }
 }

@@ -10,7 +10,7 @@ package edu.metu.lngamesml.agents;
 public enum LearnerTypes {
     C45,
     SVM,
-    RBM,
+    RBFNET,
     NBAYES,
     KNN,
     SMO,

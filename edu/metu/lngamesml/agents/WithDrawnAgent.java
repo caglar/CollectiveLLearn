@@ -17,8 +17,8 @@ public class WithDrawnAgent {
     private SupervisedLearning LearningAlgorithm = null;
     private int AgentId = 0;
 
-    public void setLearningType(LearnerTypes learningTechnique) {
-        LearningAlgorithm = new SupervisedLearning(learningTechnique);
+    public void setLearningType(LearnerTypes learningTechnique, String []options) {
+        LearningAlgorithm = new SupervisedLearning(learningTechnique, options);
     }
 
     public void learnFromData(Instances insts) {

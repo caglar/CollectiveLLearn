@@ -24,6 +24,8 @@ import java.util.Random;
 public class ConfidenceLGame extends BasicLanguageGame {
 
     private Convergence Converge = null;
+    private int noOfSuccess = 0;
+    private int noOfFails = 0;
 
     public ConfidenceLGame() {
         super();
@@ -49,7 +51,9 @@ public class ConfidenceLGame extends BasicLanguageGame {
         }
         if (sCat.equals(hCat)) {
             adjustBeliefs(sCat, hCat, true);
+            noOfSuccess++;
         } else {
+            noOfFails++;
             Converge.balanceTable(sCat, hCat);
             adjustBeliefs(sCat, hCat, false);
             hearCat.setConfidence(hCat.getConfidence());
@@ -76,7 +80,8 @@ public class ConfidenceLGame extends BasicLanguageGame {
             }
             Instance currentContext;
             CategoricalComm currentClassVal = null;
-            System.out.println("Play games!!");
+
+            //System.out.println("Play games!!");
             for (int i = 0; i < noOfTestInstances; i++) {
                 Converge.emptyTable();
                 currentContext = testInstances.get(i);
@@ -107,12 +112,20 @@ public class ConfidenceLGame extends BasicLanguageGame {
                 bcEval.addPerformanceObservation(currentClassVal, currentContext);
                 prepareForNewGame();
             }
-            AgentsIndividualPerf agPerf = Converge.getAgentsIndividualPerf();
+
+            //System.out.println("Total Number of failures:" + noOfFails);
+            //System.out.println("Total Number of successes:" + noOfSuccess);
+
+            double avgTime = (double)(noOfFails+noOfSuccess)/(double)noOfTestInstances;
+            //System.out.println("Average time: " + avgTime);
+
             int noOfTestEx = testInstances.size();
-            for(int i = 0; i < this.NoOfAgents; i++){
+
+            /*for(int i = 0; i < this.NoOfAgents; i++){
                 System.out.println("Accuracy for agent " + i + ": " + agPerf.getAccuracyForSpecificAgent(i, noOfTestEx));
-            }
-            System.out.println(bcEval.getPerformanceMetrics());
+            } */
+            //System.out.println(bcEval.getPerformanceMetrics());
+            Accuracy = bcEval.getAccuracyPercent();
         }
     }
 }

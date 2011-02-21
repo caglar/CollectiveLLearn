@@ -22,16 +22,16 @@ public class SupervisedCognitiveAgent extends Agent {
     private LongTermMemory LTM = new LongTermMemory();
     private int id;
 
-    public SupervisedCognitiveAgent(LearnerTypes learnerType) {
-        setLearningType(learnerType);
+    public SupervisedCognitiveAgent(LearnerTypes learnerType, String []options) {
+        setLearningType(learnerType, options);
     }
 
     public SupervisedCognitiveAgent() {
     }
 
     @Override
-    public void setLearningType(LearnerTypes learningTechnique) {
-        LearningAlgorithm = new SupervisedLearning(learningTechnique);
+    public void setLearningType(LearnerTypes learningTechnique, String []options) {
+        LearningAlgorithm = new SupervisedLearning(learningTechnique, options);
     }
 
     public void learnFromData(Instances insts) {

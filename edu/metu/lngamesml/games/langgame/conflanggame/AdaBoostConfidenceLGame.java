@@ -58,7 +58,7 @@ public class AdaBoostConfidenceLGame extends AdaBoostM1
         for (int i = 0; i < NoOfAgents; i++) {
             bca = new BasicCognitiveAgent();
             bca.setId(i);
-            bca.setLearningType(LType);
+            bca.setLearningType(LType, null);
             if (Agents.size() <= i ){
                 Agents.add(bca);
             } else {

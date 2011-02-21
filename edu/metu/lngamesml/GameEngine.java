@@ -187,7 +187,7 @@ public class GameEngine {
         //startMajorityVotingSim();
         //startClassClusterMajorityVotingSim();
         //startBasicLanguageGame(true);
-        startConfidenceLangGame(true);
+        //startConfidenceLangGame(true);
         //startClusterConfidenceGame();
         //startClassClusterConfidenceGame();
         //startClassClusterGame();

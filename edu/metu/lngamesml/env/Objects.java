@@ -20,7 +20,7 @@ public class Objects {
 
             case NBAYES:
 
-            case RBM:
+            case RBFNET:
 
             default:
         }

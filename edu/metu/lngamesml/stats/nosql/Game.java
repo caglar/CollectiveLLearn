@@ -1,10 +1,10 @@
-package edu.metu.lngamesml.stats;
+package edu.metu.lngamesml.stats.nosql;
 
 import com.google.code.morphia.annotations.Embedded;
-import edu.metu.lngamesml.stats.game.AgentStat;
-import edu.metu.lngamesml.stats.game.RunningAgentStat;
-import edu.metu.lngamesml.stats.game.RunningStat;
-import edu.metu.lngamesml.stats.game.Stat;
+import edu.metu.lngamesml.stats.nosql.game.AgentStat;
+import edu.metu.lngamesml.stats.nosql.game.RunningAgentStat;
+import edu.metu.lngamesml.stats.nosql.game.RunningStat;
+import edu.metu.lngamesml.stats.nosql.game.Stat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Embedded
 public final class Game {
-
+    private String id;
     private String GameName = "";
     private String TestDataset = "";
     private double SamplingRatio = 0.0;
@@ -32,7 +32,7 @@ public final class Game {
     private List<RunningStat> runStats = new ArrayList<RunningStat>();
 
     @Embedded
-    private List<Stat> stats = new ArrayList<Stat>();
+    private Stat stats = new Stat();
 
     public Game(){
     }
@@ -50,10 +50,6 @@ public final class Game {
 
     public void addRunningAgentStats(RunningAgentStat runAgStat){
         this.runAgStats.add(runAgStat);
-    }
-
-    public void addStats(Stat stat){
-        this.stats.add(stat);
     }
 
     public void addRunningStat(RunningStat rStat){
@@ -119,12 +115,19 @@ public final class Game {
         this.runAgStats = runAgStats;
     }
 
-    public List<Stat> getStats() {
+    public Stat getStats() {
         return stats;
     }
 
-    public void setStats(List<Stat> stats) {
+    public void setStats(Stat stats) {
         this.stats = stats;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

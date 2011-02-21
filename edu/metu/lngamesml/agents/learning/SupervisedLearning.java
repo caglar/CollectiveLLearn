@@ -5,6 +5,7 @@ import edu.metu.lngamesml.agents.com.CategoricalComm;
 import edu.metu.lngamesml.utils.log.Logging;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.functions.LibSVM;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.lazy.KStar;
 import weka.classifiers.trees.J48;
@@ -30,9 +31,9 @@ public class SupervisedLearning implements Learning {
      * @TODO Add learning algorithms' wrapper here.
      */
 
-    public SupervisedLearning(LearnerTypes learningAlgo) {
+    public SupervisedLearning(LearnerTypes learningAlgo, String []options) {
         LearningAlgo = learningAlgo;
-        initClassifier();
+        initClassifier(options);
     }
 
     public SupervisedLearning() {
@@ -43,12 +44,12 @@ public class SupervisedLearning implements Learning {
         return LearningAlgo;
     }
 
-    public void setLearningAlgo(LearnerTypes learningAlgo) {
+    public void setLearningAlgo(LearnerTypes learningAlgo, String []options) {
         LearningAlgo = learningAlgo;
-        initClassifier();
+        initClassifier(options);
     }
 
-    private void initClassifier() {
+    private void initClassifier(String []optionz) {
         String[] options;
         if (LearningAlgo == LearnerTypes.C45) {
             MClassifier = new J48();
@@ -65,19 +66,50 @@ public class SupervisedLearning implements Learning {
             MClassifier = new NaiveBayes();
             options = new String[1];
             options[0] = "-no-cv"; // unpruned tree
-            ((NaiveBayes) MClassifier).setUseKernelEstimator(true);
-            try {
+            //((NaiveBayes) MClassifier).setUseKernelEstimator(true);
+            /*try {
                 MClassifier.setOptions(options);
             } catch (Exception e) {
                 Logging.log(Level.WARNING, e.getMessage());
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
+            } */
         } else if (LearningAlgo == LearnerTypes.KNN) {
             MClassifier = new KStar();
             ((KStar) MClassifier).setEntropicAutoBlend(true);
         } else if (LearningAlgo == LearnerTypes.SMO) {
             MClassifier = new SMO();
             ((SMO) MClassifier).setBuildLogisticModels(true);
+        } else if (LearningAlgo == LearnerTypes.SVM) {
+            MClassifier = new LibSVM();
+            if (optionz != null){
+                try {
+                    MClassifier.setOptions(optionz);
+                } catch (Exception e) {
+                    Logging.log(Level.WARNING, e.getMessage());
+                    e.printStackTrace();
+                }
+            } else {
+                options = new String[]{
+                    "-S", "0",
+                    "-K", "2",
+                    "-D", "3",
+                    "-G", "0.0010",
+                    "-R", "0.0",
+                    "-N", "0.5",
+                    "-M", "40.0",
+                    "-C", "1.0",
+                    "-E", "0.0010",
+                    "-P", "0.1",
+                    "-H", "0",
+                    "-model", "/home/caglar/Programs/weka-3-7-2"
+                };
+                try {
+                    MClassifier.setOptions(options);
+                } catch (Exception e) {
+                    Logging.log(Level.WARNING, e.getMessage());
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

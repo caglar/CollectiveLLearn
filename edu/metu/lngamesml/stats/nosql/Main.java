@@ -3,16 +3,16 @@
  * and open the template in the editor.
  */
 
-package edu.metu.lngamesml.stats;
+package edu.metu.lngamesml.stats.nosql;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
-import edu.metu.lngamesml.stats.game.AgentStat;
-import edu.metu.lngamesml.stats.game.RunningAgentStat;
-import edu.metu.lngamesml.stats.game.RunningStat;
-import edu.metu.lngamesml.stats.game.Stat;
+import edu.metu.lngamesml.stats.nosql.game.AgentStat;
+import edu.metu.lngamesml.stats.nosql.game.RunningAgentStat;
+import edu.metu.lngamesml.stats.nosql.game.RunningStat;
+import edu.metu.lngamesml.stats.nosql.game.Stat;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -85,12 +85,38 @@ public class Main {
         MongoGameStatsFactory.addTestSetToDB(testSet);
     }
 
+        public static void test3() throws UnknownHostException {
+        MongoGameStatsFactory.initGame();
+        TestSet testSet = new TestSet();
+        testSet.setTestNo(1);
+        testSet.startTestset();
+        testSet.addGame(new Game());
+        MongoGameStatsFactory.addTestSetToDB(testSet);
+        Game g1 = new Game();
+        g1.setGameName("Deniyorum.!!!");
+        g1.setIsBeliefUpdates(true);
+        g1.setNoOfAgents(100);
+        g1.setSamplingRatio(100);
+        g1.setTestDataset("Heyt Be!");
+        g1.setId("guguli");
+        g1.addRunningStat(new RunningStat());
+        MongoGameStatsFactory.addGameToTestSet(g1, testSet);
+        RunningStat rStat = new RunningStat();
+        rStat.setAccuracy(14);
+        rStat.setNoOfFails(10);
+        rStat.setNoOfSuccess(100);
+        rStat.setNoOfItemsProcessed(1000);
+        MongoGameStatsFactory.addRunningStatToGame(rStat, g1);
+        testSet.endTestSet();
+
+    }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         try {
-            test2();
+            test3();
         } catch (MongoException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownHostException ex) {

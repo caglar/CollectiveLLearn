@@ -40,7 +40,7 @@ public class ClusterConfidenceLGame extends ConfidenceLGame {
         Random rnd = new Random(1);
         if (LType != null) {
             for (int i = 0; i < NoOfAgents; i++) {
-                BasicCognitiveAgent agent = new BasicCognitiveAgent(LType);
+                BasicCognitiveAgent agent = new BasicCognitiveAgent(LType, null);
                 agent.setId(i);
                 if (i < (NoOfAgents - NoOfClustersPerClassifier)) {
                     for (int j = 0; j < NoOfClustersPerClassifier; j++) {

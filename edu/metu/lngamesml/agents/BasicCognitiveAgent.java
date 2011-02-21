@@ -17,21 +17,21 @@ import weka.core.Instances;
  */
 
 public class BasicCognitiveAgent extends Agent {
-    private SupervisedLearning LearningAlgorithm = null;
 
+    private SupervisedLearning LearningAlgorithm = null;
     private ShortTermMemory STM = new ShortTermMemory();
     private Objects Objs = new Objects();
     private int id;
 
-    public BasicCognitiveAgent(LearnerTypes learnerType) {
-        setLearningType(learnerType);
+    public BasicCognitiveAgent(LearnerTypes learnerType, String []options) {
+        setLearningType(learnerType, options);
     }
 
     public BasicCognitiveAgent() {}
 
     @Override
-    public void setLearningType(LearnerTypes learningTechnique) {
-        LearningAlgorithm = new SupervisedLearning(learningTechnique);
+    public void setLearningType(LearnerTypes learningTechnique, String []options) {
+        LearningAlgorithm = new SupervisedLearning(learningTechnique, options);
     }
 
     public AbstractClassifier getLearner(){

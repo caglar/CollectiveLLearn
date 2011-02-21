@@ -13,7 +13,7 @@ public class HearerBeliefUpdater extends BeliefUpdater{
     @Override
     protected void failUpdate(double sBelief, double hBelief) {
         HearerBelief = (sBelief - hBelief) * (1 - UpdateCoeff) + UpdateCoeff * sBelief;
-        System.out.println("hBelief: "+hBelief + "sBelief: " + sBelief + "new belief " + HearerBelief);
+        //System.out.println("hBelief: "+hBelief + "sBelief: " + sBelief + "new belief " + HearerBelief);
     }
 
     @Override

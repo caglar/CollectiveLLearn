@@ -13,7 +13,8 @@ public abstract class BeliefUpdater {
 
     protected double HearerBelief = 0.0;
     protected double SpeakerBelief = 0.0;
-    protected final double UpdateCoeff = 0.05;
+    //protected final double UpdateCoeff = 0.05;
+    protected final double UpdateCoeff = 0.005;
 
     protected abstract void failUpdate(double sBelief, double hBelief);
 

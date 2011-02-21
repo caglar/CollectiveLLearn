@@ -3,27 +3,45 @@
  * and open the template in the editor.
  */
 
-package edu.metu.lngamesml.stats.game;
+package edu.metu.lngamesml.stats.sqllite.game;
 
-import com.google.code.morphia.annotations.Embedded;
-import com.google.code.morphia.annotations.Transient;
+
 import edu.metu.lngamesml.eval.game.AgentsIndividualPerf;
 
 /**
  *
  * @author caglar
  */
-@Embedded
+
+
 public class RunningAgentStat {
 
     private long Timestep;
+    private int AgentId = 0;
     private double CurrentAccuracy;
     private int NoOfItemsProcessed;
     private int NoOfSuccess = 0;
     private int NoOfFails = 0;
-    @Transient
-    private AgentsIndividualPerf AIPerf;
 
+    private AgentsIndividualPerf AIPerf;
+    private int Id;
+    private int GameId;
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
+    }
+
+    public int getGameId() {
+        return GameId;
+    }
+
+    public void setGameId(int gameId) {
+        GameId = gameId;
+    }
     public RunningAgentStat(){
             AIPerf = new AgentsIndividualPerf();
     }
@@ -74,6 +92,22 @@ public class RunningAgentStat {
 
     public void addNoOfFailures(){
         NoOfFails++;
+    }
+
+    public int getAgentId() {
+        return AgentId;
+    }
+
+    public void setAgentId(int agentId) {
+        AgentId = agentId;
+    }
+
+    public AgentsIndividualPerf getAIPerf() {
+        return AIPerf;
+    }
+
+    public void setAIPerf(AgentsIndividualPerf AIPerf) {
+        this.AIPerf = AIPerf;
     }
 
     public void addDecision(int agentNo, int agLabel, int trueLabel){

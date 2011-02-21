@@ -3,23 +3,37 @@
  * and open the template in the editor.
  */
 
-package edu.metu.lngamesml.stats.game;
+package edu.metu.lngamesml.stats.sqllite.game;
 
-import com.google.code.morphia.annotations.Embedded;
 
 /**
  *
  * @author caglar
  */
-@Embedded
 public class RunningStat {
-
     private long Timestep = 0;
     private int NoOfItemsProcessed = 0;
     private int NoOfSuccesses = 0;
     private int NoOfFails = 0;
     private double Accuracy = 0.0;
+    private int Id;
+    private int GameId;
 
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
+    }
+
+    public int getGameId() {
+        return GameId;
+    }
+
+    public void setGameId(int gameId) {
+        GameId = gameId;
+    }
     public int getNoOfFails() {
         return NoOfFails;
     }
@@ -43,6 +57,7 @@ public class RunningStat {
     public void setNoOfSuccess(int NoOfSuccess) {
         this.NoOfSuccesses = NoOfSuccess;
     }
+
 
     public long getTimestep() {
         return Timestep;
