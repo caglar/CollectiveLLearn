@@ -2,11 +2,14 @@ package edu.metu.lngamesml;
 
 import edu.metu.lngamesml.agents.LearnerTypes;
 import edu.metu.lngamesml.alt.MajorityVoting;
+import edu.metu.lngamesml.alt.;
 import edu.metu.lngamesml.games.langgame.BasicLanguageGame;
 import edu.metu.lngamesml.games.langgame.conflanggame.ConfidenceLGame;
 import edu.metu.lngamesml.utils.log.Logging;
 
 import java.util.logging.Level;
+
+,
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,6 +25,21 @@ public class ThesisTests {
         System.out.println("Agents creation is started");
         System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset );
         MajorityVoting mVoting = new MajorityVoting(noOfAgents, samplingRatio);
+        //mVoting.setLearningType(LearnerTypes.NBAYES);
+        mVoting.setLearningType(lType);
+        mVoting.createAgentsWSampled(trainingDataset);
+        System.out.println("Agents are created");
+        System.out.println("The simulation has started");
+        mVoting.startSimulation(testDataset);
+        System.out.println("Accuracy is: " + mVoting.getAccuracy());
+        System.out.println("The simulation has ended");
+    }
+
+    public static void startWeightedMajorityVotingSim(String trainingDataset, String testDataset, LearnerTypes lType, int noOfAgents, int samplingRatio) {
+        System.out.println("=============Weighted Majority Voting Simulation have started=================");
+        System.out.println("Agents creation is started");
+        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset );
+        MajorityVoting mVoting = new WeightedMajorityVoting(noOfAgents, samplingRatio);
         //mVoting.setLearningType(LearnerTypes.NBAYES);
         mVoting.setLearningType(lType);
         mVoting.createAgentsWSampled(trainingDataset);
@@ -179,13 +197,14 @@ public class ThesisTests {
         String trainingDataset = "/home/caglar/Dataset/segment/segment-challenge.arff";
         String testDataset = "/home/caglar/Dataset/segment/segment-test.arff";
         int noOfAgents = 10;
-        int samplingRatio = 10;
+        int samplingRatio = 25;
         //startMajorityVotingSimNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         //startBasicLanguageGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         //startConfidenceLangGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
 
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
-        startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
+        startWeightedMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        //startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
     }
 
@@ -197,18 +216,22 @@ public class ThesisTests {
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
+
         //10 percent:
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, 10);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, 10, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, 10, true);
+
         //15 percent
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, 15);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, 15, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, 15, true);
+
         //20 percent
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, 20);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, 20, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, 20, true);
+
         //25 percent
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, 25);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, 25, true);
@@ -223,10 +246,12 @@ public class ThesisTests {
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
+
         noOfAgents +=5;
         startMajorityVotingSim(trainingDataset, testDataset, lType,noOfAgents, samplingRatio);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
+
         noOfAgents +=5;
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
@@ -296,7 +321,7 @@ public class ThesisTests {
     public static void main(String args[]){
         //mnistTests();
         //gtvsTests();
-        segmentationTests(LearnerTypes.SVM);
+        segmentationTests(LearnerTypes.C45);
         //segmentationIncSamplingTests();
         //segmentationIncAgentTests();
         //segmentationIncAgentTests10Times();

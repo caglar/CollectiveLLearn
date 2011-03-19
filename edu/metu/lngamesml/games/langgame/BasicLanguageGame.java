@@ -16,16 +16,15 @@ import edu.metu.lngamesml.games.LGame;
 import edu.metu.lngamesml.stats.nosql.Game;
 import edu.metu.lngamesml.stats.nosql.game.AgentStat;
 import edu.metu.lngamesml.stats.nosql.game.RunningAgentStat;
-import edu.metu.lngamesml.stats.nosql.game.RunningStat;
 import edu.metu.lngamesml.stats.nosql.game.Stat;
 import edu.metu.lngamesml.utils.log.Logging;
 import edu.metu.lngamesml.utils.random.MersenneTwister;
-
 import weka.core.Instance;
 import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 
 /**
@@ -43,7 +42,7 @@ public class BasicLanguageGame implements LGame {
     protected MersenneTwister MRnd = new MersenneTwister(System.nanoTime());
     protected LearnerTypes LType;
     protected ConfidenceEstimator CfEstimator;
-    protected double []Confidences;
+    protected double[] Confidences;
     protected boolean UseConfidences = false;
     protected BasicGameEvaluator BGEval = null;
     protected boolean UseBeliefUpdates = false;
@@ -56,7 +55,6 @@ public class BasicLanguageGame implements LGame {
         NoOfAgents = 10;
         SamplingRatio = 40;
         MGame = new Game();
-
     }
 
     public BasicLanguageGame(int noOfAgents, int samplingRatio) {
@@ -97,10 +95,35 @@ public class BasicLanguageGame implements LGame {
         Instances insts = FileLoaderFactory.loadFile(trainingDataset);
         Confidences = CfEstimator.estimateConfidences(insts, Agents);
     }
-    
+
+    protected void calcConfidence(Instances insts) {
+        CfEstimator = new ConfidenceEstimator(NoOfAgents);
+        CfEstimator.setSamplingRatio(100);
+        Confidences = CfEstimator.estimateConfidences(insts, Agents);
+    }
+
+    protected double agentConfCV(Agent agent, int k, InstancesList[] dataList) {
+        double confidence = 0.0;
+        Random rnd = new Random();
+        for (int i = 0; i < k; i++) {
+            int randomIdx = rnd.nextInt(NoOfAgents);
+            while (randomIdx == agent.getId()) {
+                randomIdx = rnd.nextInt(NoOfAgents);
+            }
+            Instances validationData = dataList[randomIdx].getInstances();
+            confidence += CfEstimator.estimateConfidence(validationData, agent);
+        }
+        confidence /= (double)k;
+        return confidence;
+    }
+
     @Override
     public void createAgents(String trainingDataset) {
         WeightedSampling wSampling = new WeightedSampling(trainingDataset, NoOfAgents);
+        if (UseConfidences) {
+            Confidences = new double[NoOfAgents];
+            CfEstimator = new ConfidenceEstimator(NoOfAgents);
+        }
         try {
             wSampling.setSamplingRatio(SamplingRatio);
         } catch (Exception e) {
@@ -108,19 +131,28 @@ public class BasicLanguageGame implements LGame {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         InstancesList[] dataList = wSampling.partitionDataset();
+        Random rnd = new Random();
         if (LType != null) {
             for (int i = 0; i < NoOfAgents; i++) {
                 BasicCognitiveAgent agent = new BasicCognitiveAgent(LType, null);
                 Instances learningData = dataList[i].getInstances();
+
                 agent.setId(i);
                 agent.learnFromData(learningData);
+                if (UseConfidences) {
+                    /*int randomIdx = rnd.nextInt(NoOfAgents);
+                    while (randomIdx == i) {
+                        randomIdx = rnd.nextInt(NoOfAgents);
+                    }
+                    Instances validationData = dataList[randomIdx].getInstances();
+                    Confidences[i] = CfEstimator.estimateConfidence(validationData, agent);
+                    */
+                    Confidences[i] = agentConfCV(agent, 4, dataList);
+                }
                 Agents.add(i, agent);
             }
         } else {
             throw new NullPointerException("Learner Type can't be null!");
-        }
-        if (UseConfidences) {
-            calcConfidences(trainingDataset);
         }
     }
 
@@ -128,7 +160,7 @@ public class BasicLanguageGame implements LGame {
         LType = lType;
     }
 
-    protected void setGameProps(String testDataset, String gName){
+    protected void setGameProps(String testDataset, String gName) {
         MGame.setNoOfAgents(NoOfAgents);
         MGame.setGameName(gName);
         MGame.setTestDataset(testDataset);
@@ -146,14 +178,14 @@ public class BasicLanguageGame implements LGame {
         }
     }
 
-    protected void addRunningAgentStatsToGame(List<RunningAgentStat> runningAgentStats){
-        for(RunningAgentStat rAgentStat: runningAgentStats){
+    protected void addRunningAgentStatsToGame(List<RunningAgentStat> runningAgentStats) {
+        for (RunningAgentStat rAgentStat : runningAgentStats) {
             MGame.addRunningAgentStats(rAgentStat);
         }
     }
 
-    protected void addRunningAgentStatsToAgentStats(List<RunningAgentStat> runningAgentStats){
-        for(RunningAgentStat rAgentStat: runningAgentStats){
+    protected void addRunningAgentStatsToAgentStats(List<RunningAgentStat> runningAgentStats) {
+        for (RunningAgentStat rAgentStat : runningAgentStats) {
             AgentStat agentStat = new AgentStat();
             agentStat.setAgentID(rAgentStat.getAgentId());
             agentStat.setNoOfFails(rAgentStat.getNoOfFails());
@@ -164,17 +196,17 @@ public class BasicLanguageGame implements LGame {
         }
     }
 
-    protected void addFailuresToAgentStats(RunningAgentStat rAgentStat1, RunningAgentStat rAgentStat2){
+    protected void addFailuresToAgentStats(RunningAgentStat rAgentStat1, RunningAgentStat rAgentStat2) {
         rAgentStat1.addNoOfFailures();
         rAgentStat2.addNoOfFailures();
     }
 
-    protected void addSuccessToAgentStats(RunningAgentStat rAgentStat1, RunningAgentStat rAgentStat2){
+    protected void addSuccessToAgentStats(RunningAgentStat rAgentStat1, RunningAgentStat rAgentStat2) {
         rAgentStat1.addNoOfSuccesses();
         rAgentStat2.addNoOfSuccesses();
     }
 
-    protected void addStatToGame(Stat stat, double accuracy, int noOfFails, int noOfSuccesses){
+    protected void addStatToGame(Stat stat, double accuracy, int noOfFails, int noOfSuccesses) {
         stat.setAccuracy(accuracy);
         stat.setNoOfFails(noOfFails);
         stat.setNoOfSucesses(noOfSuccesses);
@@ -257,7 +289,7 @@ public class BasicLanguageGame implements LGame {
         //System.out.println(bcEval.getPerformanceMetrics());
         //System.out.println("Total Number of failures:" + noOfFails);
         //System.out.println("Total Number of successes:" + noOfSuccess);
-        double avgTime = (double)(noOfFails+noOfSuccess)/(double)noOfTestInstances;
+        double avgTime = (double) (noOfFails + noOfSuccess) / (double) noOfTestInstances;
         //System.out.println("Average time: " + avgTime);
         Accuracy = bcEval.getAccuracyPercent();
         //addRunningAgentStatsToAgentStats(rAgentStats);
@@ -267,7 +299,7 @@ public class BasicLanguageGame implements LGame {
 
     public BasicGameEvaluator getBasicGameEval() {
         if (BGEval == null) {
-            BGEval = new BasicGameEvaluator(0,0);
+            BGEval = new BasicGameEvaluator(0, 0);
         }
         return BGEval;
     }
@@ -277,5 +309,6 @@ public class BasicLanguageGame implements LGame {
     }
 
     @Override
-    public void setAgentsOnGraph(int x, int y) {}
+    public void setAgentsOnGraph(int x, int y) {
+    }
 }

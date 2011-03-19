@@ -9,7 +9,9 @@ import edu.metu.lngamesml.agents.com.CategoricalComm;
  * Time: 12:44 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SpeakerBeliefUpdater extends BeliefUpdater{
+public class SpeakerBeliefUpdater extends BeliefUpdater {
+
+    private static int SuccessFactor = 5;
 
     @Override
     public void failUpdate(double sBelief, double hBelief) {
@@ -19,7 +21,7 @@ public class SpeakerBeliefUpdater extends BeliefUpdater{
 
     @Override
     public void successUpdate(double sBelief, double hBelief) {
-        SpeakerBelief = sBelief + UpdateCoeff * hBelief;
+        SpeakerBelief = sBelief + SuccessFactor * UpdateCoeff * hBelief;
     }
 
     @Override

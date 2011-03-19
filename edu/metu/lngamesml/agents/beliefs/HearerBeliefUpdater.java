@@ -10,6 +10,8 @@ import edu.metu.lngamesml.agents.com.CategoricalComm;
  * To change this template use File | Settings | File Templates.
  */
 public class HearerBeliefUpdater extends BeliefUpdater{
+    private static int SuccessFactor = 5;
+
     @Override
     protected void failUpdate(double sBelief, double hBelief) {
         HearerBelief = (sBelief - hBelief) * (1 - UpdateCoeff) + UpdateCoeff * sBelief;
@@ -18,7 +20,7 @@ public class HearerBeliefUpdater extends BeliefUpdater{
 
     @Override
     protected void successUpdate(double sBelief, double hBelief) {
-        HearerBelief = hBelief + (UpdateCoeff * sBelief);
+        HearerBelief = hBelief + SuccessFactor * (UpdateCoeff * sBelief);
     }
 
     @Override

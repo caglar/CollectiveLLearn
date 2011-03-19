@@ -2,6 +2,7 @@ package edu.metu.lngamesml.agents;
 
 import edu.metu.lngamesml.agents.com.CategoricalComm;
 import edu.metu.lngamesml.agents.learning.SupervisedLearning;
+import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -19,6 +20,9 @@ public class WithDrawnAgent {
 
     public void setLearningType(LearnerTypes learningTechnique, String []options) {
         LearningAlgorithm = new SupervisedLearning(learningTechnique, options);
+    }
+    public AbstractClassifier getLearner(){
+        return LearningAlgorithm.getClassifier();
     }
 
     public void learnFromData(Instances insts) {

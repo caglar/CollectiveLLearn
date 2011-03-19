@@ -1,6 +1,7 @@
 package edu.metu.lngamesml.data;
 
 import edu.metu.lngamesml.agents.Agent;
+import edu.metu.lngamesml.agents.WithDrawnAgent;
 import edu.metu.lngamesml.eval.classification.BasicClassificationEvaluator;
 import edu.metu.lngamesml.utils.log.Logging;
 import weka.core.Instance;
@@ -55,6 +56,38 @@ public class ConfidenceEstimator {
         return data;
     }
 
+    public double estimateConfidence(Instances data, Agent agent) {
+        double confidence = 0.0;
+        BasicClassificationEvaluator bcEval = new BasicClassificationEvaluator();
+        for (Instance instance : data) {
+            int resClass = 0;
+            try {
+                resClass = (int) agent.getLearner().classifyInstance(instance);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            bcEval.addPerformanceObservation(resClass, instance);
+        }
+        confidence = bcEval.getAccuracyPercent() / 100;
+        return confidence;
+    }
+
+    public double estimateConfidence(Instances data, WithDrawnAgent agent) {
+        double confidence = 0.0;
+        BasicClassificationEvaluator bcEval = new BasicClassificationEvaluator();
+        for (Instance instance : data) {
+            int resClass = 0;
+            try {
+                resClass = (int) agent.getLearner().classifyInstance(instance);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            bcEval.addPerformanceObservation(resClass, instance);
+        }
+        confidence = bcEval.getAccuracyPercent() / 100;
+        return confidence;
+    }
+
     public double[] estimateConfidences(Instances trainingData, ArrayList<Agent> Agents) {
         Instances sampledData = getSampledData(trainingData);
         int agentNo = 0;
@@ -63,7 +96,7 @@ public class ConfidenceEstimator {
             for (Instance instance : sampledData) {
                 int resClass = 0;
                 try {
-                    resClass = (int)agent.getLearner().classifyInstance(instance);
+                    resClass = (int) agent.getLearner().classifyInstance(instance);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
