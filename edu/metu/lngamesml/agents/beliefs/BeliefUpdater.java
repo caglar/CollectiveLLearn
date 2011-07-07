@@ -14,13 +14,13 @@ public abstract class BeliefUpdater {
     protected double HearerBelief = 0.0;
     protected double SpeakerBelief = 0.0;
     //protected final double UpdateCoeff = 0.05;
-    protected final double UpdateCoeff = 0.05;
+    protected final double UpdateCoeff = 0.04;
 
     protected abstract void failUpdate(double sBelief, double hBelief);
 
     protected abstract void successUpdate(double sBelief, double hBelief);
 
-    protected abstract void updateBeliefs(CategoricalComm sCatComm, CategoricalComm hCatComm, boolean isSuccess);
+    protected abstract void updateBeliefs(CategoricalComm sCatComm, CategoricalComm hCatComm, SigmoidFunctionTypes sigFunType, boolean isSuccess);
 
     public abstract double getBelief();
 }

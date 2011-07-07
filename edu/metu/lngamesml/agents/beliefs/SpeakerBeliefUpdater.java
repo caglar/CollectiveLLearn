@@ -11,11 +11,22 @@ import edu.metu.lngamesml.agents.com.CategoricalComm;
  */
 public class SpeakerBeliefUpdater extends BeliefUpdater {
 
-    private static int SuccessFactor = 5;
+    private static int SuccessFactor = 3;
+    private SigmoidFunctionTypes sigmoidFunctionTypes;
+    private BeliefScaler beliefScaler = null;
+
+    public SpeakerBeliefUpdater() {
+        sigmoidFunctionTypes = SigmoidFunctionTypes.NONE;
+        beliefScaler = new BeliefScaler();
+    }
+
+    public SpeakerBeliefUpdater(SigmoidFunctionTypes sigFunType) {
+        beliefScaler = new BeliefScaler();
+        beliefScaler.setSigmoidFunctionType(sigFunType);
+    }
 
     @Override
     public void failUpdate(double sBelief, double hBelief) {
-        //SpeakerBelief = sBelief - (UpdateCoeff * UpdateCoeff) * hBelief;
         SpeakerBelief = sBelief - (UpdateCoeff) * hBelief;
     }
 
@@ -25,8 +36,8 @@ public class SpeakerBeliefUpdater extends BeliefUpdater {
     }
 
     @Override
-    public void updateBeliefs(CategoricalComm sCatComm, CategoricalComm hCatComm, boolean isSuccess) {
-        if(isSuccess) {
+    public void updateBeliefs(CategoricalComm sCatComm, CategoricalComm hCatComm, SigmoidFunctionTypes sigFunType, boolean isSuccess) {
+        if (isSuccess) {
             successUpdate(sCatComm.getConfidence(), hCatComm.getConfidence());
         } else {
             failUpdate(sCatComm.getConfidence(), hCatComm.getConfidence());

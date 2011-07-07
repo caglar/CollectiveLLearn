@@ -3,18 +3,26 @@
   <grid id="27dc6" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="400"/>
+      <xy x="20" y="20" width="696" height="400"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <vspacer id="4f3f0">
-        <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </vspacer>
-      <grid id="5fce5" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
+      <grid id="5fce5" layout-manager="FormLayout">
+        <rowspec value="center:d:grow"/>
+        <rowspec value="top:4dlu:noGrow"/>
+        <rowspec value="center:d:grow"/>
+        <rowspec value="top:4dlu:noGrow"/>
+        <rowspec value="center:d:grow"/>
+        <rowspec value="top:4dlu:noGrow"/>
+        <rowspec value="center:d:grow"/>
+        <rowspec value="top:4dlu:noGrow"/>
+        <rowspec value="center:d:grow"/>
+        <rowspec value="top:4dlu:noGrow"/>
+        <rowspec value="center:d:grow"/>
+        <colspec value="fill:max(d;4px):noGrow"/>
+        <colspec value="left:4dlu:noGrow"/>
+        <colspec value="fill:d:grow"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -24,6 +32,7 @@
           <component id="28912" class="javax.swing.JLabel" binding="lblBaseLearner">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <forms/>
             </constraints>
             <properties>
               <text value="Base Learner"/>
@@ -31,12 +40,98 @@
           </component>
           <component id="2a31e" class="javax.swing.JComboBox" binding="cmbBaseLearner">
             <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="301" height="25"/>
+              </grid>
+              <forms/>
             </constraints>
             <properties/>
           </component>
+          <component id="d6f98" class="javax.swing.JLabel" binding="lblLearning">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <text value="Learning &amp; Combination Method:"/>
+            </properties>
+          </component>
+          <component id="70e69" class="javax.swing.JComboBox" binding="cmbLearningCombine">
+            <constraints>
+              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="ad21f" class="javax.swing.JLabel" binding="lblNoOfAgents">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <text value="Number of Agents"/>
+            </properties>
+          </component>
+          <component id="54fa5" class="javax.swing.JLabel" binding="lblSamplingPercentage">
+            <constraints>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <text value="Sampling Percentage"/>
+            </properties>
+          </component>
+          <component id="ffaa5" class="javax.swing.JFormattedTextField" binding="fTxtSamppling">
+            <constraints>
+              <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <forms defaultalign-horz="false"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="59aca" class="javax.swing.JFormattedTextField" binding="fTxtNoOfAgents">
+            <constraints>
+              <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <forms defaultalign-horz="false"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="7b55e" class="javax.swing.JLabel" binding="lblExportResults">
+            <constraints>
+              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <text value="Export Results With:"/>
+            </properties>
+          </component>
+          <component id="65929" class="javax.swing.JComboBox" binding="cmbExportStats">
+            <constraints>
+              <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="d750b" class="javax.swing.JButton" binding="btnStart">
+            <constraints>
+              <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <text value="Start"/>
+              <toolTipText value="Starts the simulation"/>
+            </properties>
+          </component>
         </children>
       </grid>
+      <vspacer id="4f3f0">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
     </children>
   </grid>
 </form>

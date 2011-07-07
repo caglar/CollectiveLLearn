@@ -1,10 +1,12 @@
-package edu.metu.lngamesml.env;
+package edu.metu.lngamesml.collective.games;
 
 /**
  * Created by IntelliJ IDEA.
  * User: caglar
- * Date: Sep 15, 2010
- * Time: 5:58:57 AM
+ * Date: 1/23/11
+ * Time: 2:14 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Sample { }
+public abstract class MGStats {
+
+}

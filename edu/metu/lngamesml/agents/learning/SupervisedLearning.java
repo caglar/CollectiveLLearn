@@ -6,6 +6,7 @@ import edu.metu.lngamesml.utils.log.Logging;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.LibSVM;
+import weka.classifiers.functions.RBFNetwork;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.lazy.KStar;
 import weka.classifiers.trees.J48;
@@ -73,6 +74,16 @@ public class SupervisedLearning implements Learning {
                 Logging.log(Level.WARNING, e.getMessage());
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } */
+        } else if (LearningAlgo == LearnerTypes.RBFNET) {
+            MClassifier = new RBFNetwork();
+            options = new String[]{
+                    "-B", "2"
+            };
+            try {
+                MClassifier.setOptions(options);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else if (LearningAlgo == LearnerTypes.KNN) {
             MClassifier = new KStar();
             ((KStar) MClassifier).setEntropicAutoBlend(true);
@@ -101,8 +112,9 @@ public class SupervisedLearning implements Learning {
                     "-E", "0.0010",
                     "-P", "0.1",
                     "-H", "0",
-                    "-model", "/home/caglar/Programs/weka-3-7-2"
+                    "-model", System.getProperty("user.dir")
                 };
+
                 try {
                     MClassifier.setOptions(options);
                 } catch (Exception e) {

@@ -1,18 +1,20 @@
-package edu.metu.lngamesml.games.langgame;
+package edu.metu.lngamesml.collective.games.langgame;
 
 import edu.metu.lngamesml.agents.Agent;
 import edu.metu.lngamesml.agents.BasicCognitiveAgent;
 import edu.metu.lngamesml.agents.LearnerTypes;
 import edu.metu.lngamesml.agents.beliefs.BeliefUpdaterFactory;
+import edu.metu.lngamesml.agents.beliefs.SigmoidFunctionTypes;
 import edu.metu.lngamesml.agents.com.CategoricalComm;
+import edu.metu.lngamesml.collective.games.LGame;
 import edu.metu.lngamesml.core.InstancesList;
+import edu.metu.lngamesml.criterions.ConvergenceCriterion;
 import edu.metu.lngamesml.data.ConfidenceEstimator;
 import edu.metu.lngamesml.data.FileLoaderFactory;
 import edu.metu.lngamesml.data.sample.WeightedSampling;
 import edu.metu.lngamesml.eval.classification.BasicClassificationEvaluator;
 import edu.metu.lngamesml.eval.game.BasicGameEvaluator;
-import edu.metu.lngamesml.games.Convergence;
-import edu.metu.lngamesml.games.LGame;
+import edu.metu.lngamesml.network.Network;
 import edu.metu.lngamesml.stats.nosql.Game;
 import edu.metu.lngamesml.stats.nosql.game.AgentStat;
 import edu.metu.lngamesml.stats.nosql.game.RunningAgentStat;
@@ -34,7 +36,9 @@ import java.util.logging.Level;
  * Time: 2:56:25 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BasicLanguageGame implements LGame {
+public class CategorizationGame implements LGame {
+    private final String GameName = "Categorization Game";
+    private Network net;
 
     protected int NoOfAgents;
     protected int SamplingRatio;
@@ -48,16 +52,15 @@ public class BasicLanguageGame implements LGame {
     protected boolean UseBeliefUpdates = false;
     protected boolean UseMStatsDb = false;
     protected Game MGame = new Game();
-    private final String GameName = "BasicLanguageGame";
     protected double Accuracy = 0.0;
 
-    public BasicLanguageGame() {
+    public CategorizationGame() {
         NoOfAgents = 10;
         SamplingRatio = 40;
         MGame = new Game();
     }
 
-    public BasicLanguageGame(int noOfAgents, int samplingRatio) {
+    public CategorizationGame(int noOfAgents, int samplingRatio) {
         NoOfAgents = noOfAgents;
         SamplingRatio = samplingRatio;
     }
@@ -113,7 +116,7 @@ public class BasicLanguageGame implements LGame {
             Instances validationData = dataList[randomIdx].getInstances();
             confidence += CfEstimator.estimateConfidence(validationData, agent);
         }
-        confidence /= (double)k;
+        confidence /= (double) k;
         return confidence;
     }
 
@@ -215,12 +218,12 @@ public class BasicLanguageGame implements LGame {
     }
 
     @Override
-    public void playGames(String testDataset) throws Exception {
+    public void playGames(String testDataset, SigmoidFunctionTypes sigmoidFunctionType) throws Exception {
         System.gc();
         //StopWatch sWatch = new StopWatch();
         BasicCognitiveAgent bcaSpeaker;
         BasicCognitiveAgent bcaHearer;
-        Convergence convergence = new Convergence(NoOfAgents);
+        ConvergenceCriterion convergenceCriterion = new ConvergenceCriterion(NoOfAgents);
         BasicClassificationEvaluator bcEval = new BasicClassificationEvaluator();
 
         Instances testInstances = FileLoaderFactory.loadFile(testDataset);
@@ -243,9 +246,9 @@ public class BasicLanguageGame implements LGame {
         setGameProps(testDataset, GameName);
 
         for (int i = 0; i < noOfTestInstances; i++) {
-            convergence.emptyTable();
+            convergenceCriterion.emptyTable();
             currentContext = testInstances.get(i);
-            while (!convergence.isConverged(Agents, currentContext, rAgentStats)) {
+            while (!convergenceCriterion.isConverged(Agents, currentContext, rAgentStats)) {
                 isSuccess = true;
                 bcaSpeaker = (BasicCognitiveAgent) getRandomAgent();
                 bcaHearer = (BasicCognitiveAgent) getRandomAgent();
@@ -258,10 +261,10 @@ public class BasicLanguageGame implements LGame {
                     addFailuresToAgentStats(rAgentStats.get(bcaSpeaker.getId()), rAgentStats.get(bcaHearer.getId()));
 //                    rStat.incrementNoOfFails();
                     isSuccess = false;
-                    convergence.balanceTable(speakerCat, hearerCat);
+                    convergenceCriterion.balanceTable(speakerCat, hearerCat);
                     if (UseBeliefUpdates) {
                         BeliefUpdaterFactory.init();
-                        BeliefUpdaterFactory.updateBeliefs(speakerCat, hearerCat, false);
+                        BeliefUpdaterFactory.updateBeliefs(speakerCat, hearerCat, sigmoidFunctionType, false);
                     }
                     Agents.get(bcaHearer.getId()).hear(speakerCat);
                     noOfFails++;
@@ -270,7 +273,7 @@ public class BasicLanguageGame implements LGame {
 //                    rStat.incrementNoOfSuccesses();
                     if (UseBeliefUpdates) {
                         BeliefUpdaterFactory.init();
-                        BeliefUpdaterFactory.updateBeliefs(speakerCat, hearerCat, false);
+                        BeliefUpdaterFactory.updateBeliefs(speakerCat, hearerCat, sigmoidFunctionType, false);
                     }
                     noOfSuccess++;
                 }
@@ -281,7 +284,7 @@ public class BasicLanguageGame implements LGame {
             }
             //MGame.addRunningStat(rStat);
             //addRunningAgentStatsToGame(rAgentStats);
-            currentClassVal = convergence.getConvergedCategory();
+            currentClassVal = convergenceCriterion.getConvergedCategory();
             bcEval.addPerformanceObservation(currentClassVal, currentContext);
 //            rStat.setAccuracy(bcEval.getAccuracyPercent());
             prepareForNewGame();
@@ -306,6 +309,14 @@ public class BasicLanguageGame implements LGame {
 
     public double getAccuracy() {
         return Accuracy;
+    }
+
+    public Network getNet() {
+        return net;
+    }
+
+    public void setNet(Network net) {
+        this.net = net;
     }
 
     @Override

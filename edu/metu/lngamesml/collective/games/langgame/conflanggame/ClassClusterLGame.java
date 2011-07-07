@@ -1,11 +1,11 @@
-package edu.metu.lngamesml.games.langgame.conflanggame;
+package edu.metu.lngamesml.collective.games.langgame.conflanggame;
 
 import edu.metu.lngamesml.agents.BasicCognitiveAgent;
+import edu.metu.lngamesml.collective.games.langgame.CategorizationGame;
 import edu.metu.lngamesml.core.ClassBins;
 import edu.metu.lngamesml.data.FileLoaderFactory;
 import edu.metu.lngamesml.data.sample.cluster.ClusterTrainingDataHarvester;
 import edu.metu.lngamesml.exception.FaultyInputException;
-import edu.metu.lngamesml.games.langgame.BasicLanguageGame;
 import edu.metu.lngamesml.utils.log.Logging;
 import weka.core.Instances;
 
@@ -19,7 +19,7 @@ import java.util.Random;
  * Time: 8:50:08 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ClassClusterLGame extends BasicLanguageGame {
+public class ClassClusterLGame extends CategorizationGame {
            private int NoOfClustersPerClassifier = 2;
 
     public ClassClusterLGame(int noOfClustersPerClassifier) {

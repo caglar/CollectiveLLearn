@@ -26,9 +26,9 @@ public class BeliefUpdaterFactory {
         }
     }
 
-    public static void updateBeliefs(CategoricalComm sCatComm, CategoricalComm hCatComm, boolean isSuccess) {
-            SBUpdater.updateBeliefs(sCatComm, hCatComm, isSuccess);
-            HBUpdater.updateBeliefs(sCatComm, hCatComm, isSuccess);
+    public static void updateBeliefs(CategoricalComm sCatComm, CategoricalComm hCatComm, SigmoidFunctionTypes sigFunType, boolean isSuccess) {
+            SBUpdater.updateBeliefs(sCatComm, hCatComm, sigFunType, isSuccess);
+            HBUpdater.updateBeliefs(sCatComm, hCatComm, sigFunType, isSuccess);
             sCatComm.setConfidence(SBUpdater.getBelief());
             hCatComm.setConfidence(HBUpdater.getBelief());
     }

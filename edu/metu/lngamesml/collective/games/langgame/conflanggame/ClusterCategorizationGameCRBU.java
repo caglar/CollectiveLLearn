@@ -1,4 +1,4 @@
-package edu.metu.lngamesml.games.langgame.conflanggame;
+package edu.metu.lngamesml.collective.games.langgame.conflanggame;
 
 import edu.metu.lngamesml.agents.BasicCognitiveAgent;
 import edu.metu.lngamesml.data.FileLoaderFactory;
@@ -17,11 +17,11 @@ import java.util.Random;
  * To change this template use File | Settings | File Templates.
  */
 
-public class ClusterConfidenceLGame extends ConfidenceLGame {
+public class ClusterCategorizationGameCRBU extends CategorizationGameCRBU {
 
     private int NoOfClustersPerClassifier = 2;
 
-    public ClusterConfidenceLGame(int noOfClustersPerClassifier) {
+    public ClusterCategorizationGameCRBU(int noOfClustersPerClassifier) {
         super();
         try {
             setNoOfClustersPerClassifier(noOfClustersPerClassifier);

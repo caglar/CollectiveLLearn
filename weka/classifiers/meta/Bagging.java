@@ -15,7 +15,7 @@
  */
 
 /*
- *    Bagging.java
+ *    BaggingClassifiers.java
  *    Copyright (C) 1999 University of Waikato, Hamilton, New Zealand
  *
  */
@@ -37,7 +37,7 @@ import java.util.Vector;
  * <br/>
  * For more information, see<br/>
  * <br/>
- * Leo Breiman (1996). Bagging predictors. Machine Learning. 24(2):123-140.
+ * Leo Breiman (1996). BaggingClassifiers predictors. Machine Learning. 24(2):123-140.
  * <p/>
  <!-- globalinfo-end -->
  *
@@ -49,7 +49,7 @@ import java.util.Vector;
  *    journal = {Machine Learning},
  *    number = {2},
  *    pages = {123-140},
- *    title = {Bagging predictors},
+ *    title = {BaggingClassifiers predictors},
  *    volume = {24},
  *    year = {1996}
  * }
@@ -166,7 +166,7 @@ public class Bagging
     result = new TechnicalInformation(Type.ARTICLE);
     result.setValue(Field.AUTHOR, "Leo Breiman");
     result.setValue(Field.YEAR, "1996");
-    result.setValue(Field.TITLE, "Bagging predictors");
+    result.setValue(Field.TITLE, "BaggingClassifiers predictors");
     result.setValue(Field.JOURNAL, "Machine Learning");
     result.setValue(Field.VOLUME, "24");
     result.setValue(Field.NUMBER, "2");
@@ -406,7 +406,7 @@ public class Bagging
       return measureOutOfBagError();
     }
     else {throw new IllegalArgumentException(additionalMeasureName 
-					     + " not supported (Bagging)");
+					     + " not supported (BaggingClassifiers)");
     }
   }
 
@@ -498,7 +498,7 @@ public class Bagging
   }
   
   /**
-   * Bagging method.
+   * BaggingClassifiers method.
    *
    * @param data the training data to be used for generating the
    * bagged classifier.
@@ -646,7 +646,7 @@ public class Bagging
   public String toString() {
     
     if (m_Classifiers == null) {
-      return "Bagging: No model built yet.";
+      return "BaggingClassifiers: No model built yet.";
     }
     StringBuffer text = new StringBuffer();
     text.append("All the base classifiers: \n\n");

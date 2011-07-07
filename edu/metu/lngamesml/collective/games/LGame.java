@@ -1,4 +1,6 @@
-package edu.metu.lngamesml.games;
+package edu.metu.lngamesml.collective.games;
+
+import edu.metu.lngamesml.agents.beliefs.SigmoidFunctionTypes;
 
 import java.io.Serializable;
 
@@ -15,5 +17,5 @@ public interface LGame extends Serializable {
 
     public void setAgentsOnGraph(int x, int y);
 
-    public void playGames(final String testDataset) throws Exception;
+    public void playGames(final String testDataset, SigmoidFunctionTypes sigmoidFunctionType) throws Exception;
 }

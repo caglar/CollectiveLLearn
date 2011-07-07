@@ -1,13 +1,14 @@
-package edu.metu.lngamesml.games.langgame.conflanggame;
+package edu.metu.lngamesml.collective.games.langgame.conflanggame;
 
 import edu.metu.lngamesml.agents.Agent;
 import edu.metu.lngamesml.agents.BasicCognitiveAgent;
 import edu.metu.lngamesml.agents.LearnerTypes;
+import edu.metu.lngamesml.agents.beliefs.SigmoidFunctionTypes;
 import edu.metu.lngamesml.agents.com.CategoricalComm;
+import edu.metu.lngamesml.criterions.ConvergenceCriterion;
 import edu.metu.lngamesml.data.FileLoaderFactory;
 import edu.metu.lngamesml.eval.classification.BasicClassificationEvaluator;
-import edu.metu.lngamesml.games.Convergence;
-import edu.metu.lngamesml.games.LGame;
+import edu.metu.lngamesml.collective.games.LGame;
 import edu.metu.lngamesml.utils.log.Logging;
 import edu.metu.lngamesml.utils.random.MersenneTwister;
 import weka.classifiers.Evaluation;
@@ -367,20 +368,20 @@ public class AdaBoostConfidenceLGame extends AdaBoostM1
     }
 
     @Override
-    public void playGames(String testDataset) throws Exception {
+    public void playGames(String testDataset, SigmoidFunctionTypes sigmoidFunctionTypes) throws Exception {
         Instances testInstances = FileLoaderFactory.loadFile(testDataset);
         BasicCognitiveAgent bcaAgent1;
         BasicCognitiveAgent bcaAgent2;
         int noOfTestInstances = testInstances.numInstances();
         BasicClassificationEvaluator bcEval = new BasicClassificationEvaluator();
-        Convergence convergence = new Convergence(NoOfAgents);
+        ConvergenceCriterion convergenceCriterion = new ConvergenceCriterion(NoOfAgents);
         Instance currentContext;
         CategoricalComm currentClassVal = null;
         System.out.println("Play games!!");
         for (int i = 0; i < noOfTestInstances; i++) {
-            convergence.emptyTable();
+            convergenceCriterion.emptyTable();
             currentContext = testInstances.get(i);
-           while (!convergence.isConverged(Agents, currentContext)) {
+           while (!convergenceCriterion.isConverged(Agents, currentContext)) {
                 bcaAgent1 = (BasicCognitiveAgent) getRandomAgent();
                 bcaAgent2 = (BasicCognitiveAgent) getRandomAgent();
                 while (bcaAgent1.equals(bcaAgent2)) {
@@ -391,28 +392,28 @@ public class AdaBoostConfidenceLGame extends AdaBoostM1
 
                 if (cat1.getConfidence() > cat2.getConfidence()) {
                     if (!cat1.equals(cat2)) {
-                        convergence.balanceTable(cat1, cat2);
+                        convergenceCriterion.balanceTable(cat1, cat2);
                         Agents.get(bcaAgent2.getId()).hear(cat1);
                     }
                 } else if (cat1.getConfidence() == cat2.getConfidence()) {
                     if (!cat1.equals(cat2)) {
                         int speakerCatNo = ((new Random(System.nanoTime()).nextInt()) % 2);
                         if (speakerCatNo == 0) {
-                            convergence.balanceTable(cat1, cat2);
+                            convergenceCriterion.balanceTable(cat1, cat2);
                             Agents.get(bcaAgent2.getId()).hear(cat1);
                         } else {
-                            convergence.balanceTable(cat2, cat1);
+                            convergenceCriterion.balanceTable(cat2, cat1);
                             Agents.get(bcaAgent1.getId()).hear(cat2);
                         }
                     }
                 } else {
                     if (!cat1.equals(cat2)) {
-                        convergence.balanceTable(cat2, cat1);
+                        convergenceCriterion.balanceTable(cat2, cat1);
                         Agents.get(bcaAgent1.getId()).hear(cat2);
                     }
                 }
             }
-            currentClassVal = convergence.getConvergedCategory();
+            currentClassVal = convergenceCriterion.getConvergedCategory();
             bcEval.addPerformanceObservation(currentClassVal, currentContext);
             prepareForNewGame();
         }

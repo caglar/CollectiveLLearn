@@ -1,12 +1,11 @@
-package edu.metu.lngamesml.games;
+package edu.metu.lngamesml.criterions;
 
 /**
  * Created by IntelliJ IDEA.
  * User: caglar
- * Date: 1/23/11
- * Time: 2:14 PM
+ * Date: 7/7/11
+ * Time: 7:14 AM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class MGStats {
-
+public interface Criterion {
 }

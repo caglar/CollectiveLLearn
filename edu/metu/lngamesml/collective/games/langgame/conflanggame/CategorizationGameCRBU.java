@@ -1,13 +1,14 @@
-package edu.metu.lngamesml.games.langgame.conflanggame;
+package edu.metu.lngamesml.collective.games.langgame.conflanggame;
 
 import edu.metu.lngamesml.agents.BasicCognitiveAgent;
 import edu.metu.lngamesml.agents.beliefs.BeliefUpdaterFactory;
+import edu.metu.lngamesml.agents.beliefs.SigmoidFunctionTypes;
 import edu.metu.lngamesml.agents.com.CategoricalComm;
+import edu.metu.lngamesml.collective.games.langgame.CategorizationGame;
+import edu.metu.lngamesml.criterions.ConvergenceCriterion;
 import edu.metu.lngamesml.data.FileLoaderFactory;
 import edu.metu.lngamesml.eval.classification.BasicClassificationEvaluator;
-import edu.metu.lngamesml.eval.game.AgentsIndividualPerf;
-import edu.metu.lngamesml.games.Convergence;
-import edu.metu.lngamesml.games.langgame.BasicLanguageGame;
+import edu.metu.lngamesml.network.Network;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -21,41 +22,44 @@ import java.util.Random;
  * To change this template use File | Settings | File Templates.
  */
 
-public class ConfidenceLGame extends BasicLanguageGame {
+public class CategorizationGameCRBU extends CategorizationGame {
 
-    private Convergence Converge = null;
+    private final String GameName = "Categorization Game with Confidence Rated Belief Score Updates";
+    private ConvergenceCriterion converge = null;
     private int noOfSuccess = 0;
     private int noOfFails = 0;
+    private double scalingPow = 2;
 
-    public ConfidenceLGame() {
+
+    public CategorizationGameCRBU() {
         super();
     }
 
-    public ConfidenceLGame(int noOfAgents, int samplingRatio) {
+    public CategorizationGameCRBU(int noOfAgents, int samplingRatio) {
         super(noOfAgents, samplingRatio);
     }
 
-    protected void adjustBeliefs (CategoricalComm sCat, CategoricalComm hCat, boolean isSuccess) {
+    protected void adjustBeliefs (CategoricalComm sCat, CategoricalComm hCat, SigmoidFunctionTypes sigmoidFunctionType, boolean isSuccess) {
         if (UseBeliefUpdates) {
             BeliefUpdaterFactory.init();
-            BeliefUpdaterFactory.updateBeliefs(sCat, hCat, isSuccess);
+            BeliefUpdaterFactory.updateBeliefs(sCat, hCat, sigmoidFunctionType, isSuccess);
         }
     }
 
-    protected void updateCommunication (BasicCognitiveAgent sAgent, BasicCognitiveAgent hAgent, CategoricalComm sCat, CategoricalComm hCat) {
+    protected void updateCommunication (BasicCognitiveAgent sAgent, BasicCognitiveAgent hAgent, CategoricalComm sCat, CategoricalComm hCat, SigmoidFunctionTypes sigmoidFunctionType) {
         CategoricalComm hearCat = null;
         try {
             hearCat = (CategoricalComm) hCat.clone();
         } catch (CloneNotSupportedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
         if (sCat.equals(hCat)) {
-            adjustBeliefs(sCat, hCat, true);
+            adjustBeliefs(sCat, hCat, sigmoidFunctionType, true);
             noOfSuccess++;
         } else {
             noOfFails++;
-            Converge.balanceTable(sCat, hCat);
-            adjustBeliefs(sCat, hCat, false);
+            converge.balanceTable(sCat, hCat);
+            adjustBeliefs(sCat, hCat, sigmoidFunctionType, false);
             hearCat.setConfidence(hCat.getConfidence());
             hearCat.setComStatement(sCat.getComStatement());
             hearCat.setStatementNo(sCat.getStatementNo());
@@ -66,7 +70,7 @@ public class ConfidenceLGame extends BasicLanguageGame {
     }
 
     @Override
-    public void playGames(String testDataset) throws Exception {
+    public void playGames(String testDataset, SigmoidFunctionTypes sigmoidFunctionType) throws Exception {
         if (!this.UseConfidences) {
             throw new Exception("In confidence based Game useConfidences must be true");
         } else {
@@ -75,17 +79,17 @@ public class ConfidenceLGame extends BasicLanguageGame {
             BasicCognitiveAgent bcaAgent2;
             int noOfTestInstances = testInstances.numInstances();
             BasicClassificationEvaluator bcEval = new BasicClassificationEvaluator();
-            if (Converge == null) {
-                Converge = new Convergence(NoOfAgents);
+            if (converge == null) {
+                converge = new ConvergenceCriterion(NoOfAgents);
             }
             Instance currentContext;
             CategoricalComm currentClassVal = null;
 
             //System.out.println("Play games!!");
             for (int i = 0; i < noOfTestInstances; i++) {
-                Converge.emptyTable();
+                converge.emptyTable();
                 currentContext = testInstances.get(i);
-                while (!Converge.isConverged(Agents, currentContext)) {
+                while (!converge.isConverged(Agents, currentContext)) {
                     bcaAgent1 = (BasicCognitiveAgent) getRandomAgent();
                     bcaAgent2 = (BasicCognitiveAgent) getRandomAgent();
                     while (bcaAgent1.equals(bcaAgent2)) {
@@ -93,22 +97,22 @@ public class ConfidenceLGame extends BasicLanguageGame {
                     }
                     CategoricalComm cat1 = bcaAgent1.speak(currentContext);
                     CategoricalComm cat2 = bcaAgent2.speak(currentContext);
-                    double confidence1 = cat1.getConfidence() * Math.pow(Confidences[bcaAgent1.getId()], 2);
-                    double confidence2 = cat2.getConfidence() * Math.pow(Confidences[bcaAgent2.getId()], 2);
+                    double confidence1 = cat1.getConfidence() * Math.pow(Confidences[bcaAgent1.getId()], scalingPow);
+                    double confidence2 = cat2.getConfidence() * Math.pow(Confidences[bcaAgent2.getId()], scalingPow);
                     if (confidence1 > confidence2) {
-                        updateCommunication(bcaAgent1, bcaAgent2, cat1, cat2);
+                        updateCommunication(bcaAgent1, bcaAgent2, cat1, cat2, sigmoidFunctionType);
                     } else if (confidence1 == confidence2) {
                         int speakerCatNo = ((new Random(System.nanoTime()).nextInt()) % 2);
                         if (speakerCatNo == 0){
-                            updateCommunication(bcaAgent1, bcaAgent2, cat1, cat2);
+                            updateCommunication(bcaAgent1, bcaAgent2, cat1, cat2, sigmoidFunctionType);
                         } else {
-                            updateCommunication(bcaAgent2, bcaAgent1, cat2, cat1);
+                            updateCommunication(bcaAgent2, bcaAgent1, cat2, cat1, sigmoidFunctionType);
                         }
                     } else {
-                        updateCommunication(bcaAgent2, bcaAgent1, cat2, cat1);
+                        updateCommunication(bcaAgent2, bcaAgent1, cat2, cat1, sigmoidFunctionType);
                     }
                 }
-                currentClassVal = Converge.getConvergedCategory();
+                currentClassVal = converge.getConvergedCategory();
                 bcEval.addPerformanceObservation(currentClassVal, currentContext);
                 prepareForNewGame();
             }

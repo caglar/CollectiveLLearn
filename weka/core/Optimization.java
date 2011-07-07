@@ -663,7 +663,7 @@ public abstract class Optimization
 			wsBdsIndx.addElement(fixedOne);
 		    }		 		    
 		}
-		else{   // Convergence on delta(x)
+		else{   // ConvergenceCriterion on delta(x)
 		    for(i=0;i<len;i++) 
 			x[i]=xold[i];
 		    m_f=fold;

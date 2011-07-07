@@ -1,4 +1,4 @@
-package edu.metu.lngamesml.games;
+package edu.metu.lngamesml.criterions;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,13 +20,13 @@ import java.util.*;
  * @author caglar
  */
 
-public class Convergence {
+public class ConvergenceCriterion implements Criterion{
 
     private Hashtable<CategoricalComm, Integer> CategoryTbl;
     private int NoOfAgents = 0;
     private List<RunningAgentStat> RAgentStats;
 
-    public Convergence(int noOfAgents) {
+    public ConvergenceCriterion(int noOfAgents) {
         CategoryTbl = new Hashtable<CategoricalComm, Integer>();
         RAgentStats = new ArrayList<RunningAgentStat>();
         this.NoOfAgents = noOfAgents;

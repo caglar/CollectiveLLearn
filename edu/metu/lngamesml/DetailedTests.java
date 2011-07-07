@@ -2,30 +2,31 @@ package edu.metu.lngamesml;
 
 import edu.metu.lngamesml.agents.LearnerTypes;
 import edu.metu.lngamesml.agents.beliefs.SigmoidFunctionTypes;
+import edu.metu.lngamesml.alt.BaggingClassifiers;
 import edu.metu.lngamesml.alt.MajorityVoting;
+import edu.metu.lngamesml.alt.SingleClassifier;
 import edu.metu.lngamesml.alt.WeightedMajorityVoting;
-import edu.metu.lngamesml.collective.games.langgame.CategorizationGame;
 import edu.metu.lngamesml.collective.games.langgame.conflanggame.CategorizationGameCRBU;
+import edu.metu.lngamesml.exception.UninitializedClassifierException;
+import edu.metu.lngamesml.collective.games.langgame.CategorizationGame;
 import edu.metu.lngamesml.utils.log.Logging;
 
 import java.util.logging.Level;
 
-
-
 /**
  * Created by IntelliJ IDEA.
  * User: caglar
- * Date: 1/26/11
- * Time: 1:58 AM
+ * Date: 6/26/11
+ * Time: 6:23 PM
  * To change this template use File | Settings | File Templates.
  */
 
-public class ThesisTests {
+public class DetailedTests {
 
-     public static void startMajorityVotingSim(String trainingDataset, String testDataset, LearnerTypes lType, int noOfAgents, int samplingRatio) {
+    public static void startMajorityVotingSim(String trainingDataset, String testDataset, LearnerTypes lType, int noOfAgents, int samplingRatio) {
         System.out.println("=============MajorityVoting Simulation have started=================");
         System.out.println("Agents creation is started");
-        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset );
+        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset);
         MajorityVoting mVoting = new MajorityVoting(noOfAgents, samplingRatio);
         //mVoting.setLearningType(LearnerTypes.NBAYES);
         mVoting.setLearningType(lType);
@@ -33,14 +34,16 @@ public class ThesisTests {
         System.out.println("Agents are created");
         System.out.println("The simulation has started");
         mVoting.startSimulation(testDataset);
-        System.out.println("Accuracy is: " + mVoting.getAccuracy());
+        System.out.println("Accuracy on test data set: " + mVoting.getAccuracy());
+        mVoting.startSimulation(trainingDataset);
+        System.out.println("Accuracy on training data set: " + mVoting.getAccuracy());
         System.out.println("The simulation has ended");
     }
 
     public static void startWeightedMajorityVotingSim(String trainingDataset, String testDataset, LearnerTypes lType, int noOfAgents, int samplingRatio) {
         System.out.println("=============Weighted Majority Voting Simulation have started=================");
         System.out.println("Agents creation is started");
-        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset );
+        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset);
         MajorityVoting mVoting = new WeightedMajorityVoting(noOfAgents, samplingRatio);
         //mVoting.setLearningType(LearnerTypes.NBAYES);
         mVoting.setLearningType(lType);
@@ -48,7 +51,9 @@ public class ThesisTests {
         System.out.println("Agents are created");
         System.out.println("The simulation has started");
         mVoting.startSimulation(testDataset);
-        System.out.println("Accuracy is: " + mVoting.getAccuracy());
+        System.out.println("Accuracy on test data set is: " + mVoting.getAccuracy());
+        mVoting.startSimulation(trainingDataset);
+        System.out.println("Accuracy on training data set is: " + mVoting.getAccuracy());
         System.out.println("The simulation has ended");
     }
 
@@ -56,7 +61,7 @@ public class ThesisTests {
 
         System.out.println("=============CategorizationGame Simulation have started================");
         System.out.println("Agents are being created");
-        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset );
+        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset);
         CategorizationGame bLangGame = new CategorizationGame(noOfAgents, samplingRatio);
         bLangGame.setUseBeliefUpdates(true);
         bLangGame.setLearningType(lType);
@@ -65,9 +70,11 @@ public class ThesisTests {
         System.out.println("Agents are created");
         try {
             System.out.println("The game has started");
-            bLangGame.playGames(testDataset, SigmoidFunctionTypes.NONE);
+            bLangGame.playGames(testDataset, SigmoidFunctionTypes.TANH);
             System.out.println("The game has ended");
-            System.out.println("Accuracy is: " + bLangGame.getAccuracy());
+            System.out.println("Accuracy on test data set is: " + bLangGame.getAccuracy());
+            bLangGame.playGames(trainingDataset, SigmoidFunctionTypes.TANH);
+            System.out.println("Accuracy on training data set is: " + bLangGame.getAccuracy());
         } catch (Exception e) {
             Logging.log(Level.SEVERE, e.getMessage());
             e.printStackTrace();
@@ -78,7 +85,7 @@ public class ThesisTests {
 
         System.out.println("=============ConfidenceLanguageGame Simulation have started================");
         System.out.println("Agents are being created");
-        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset );
+        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset);
         CategorizationGameCRBU cLangGameCRBU = new CategorizationGameCRBU(noOfAgents, samplingRatio);
         cLangGameCRBU.setUseBeliefUpdates(useBeliefUpdates);
         cLangGameCRBU.setNoOfAgents(noOfAgents);
@@ -89,41 +96,83 @@ public class ThesisTests {
         System.out.println("Agents are created");
         try {
             System.out.println("The game has started");
-            cLangGameCRBU.playGames(testDataset, SigmoidFunctionTypes.LOGISTIC);
+            cLangGameCRBU.playGames(testDataset, SigmoidFunctionTypes.TANH);
             System.out.println("The game has ended");
-            System.out.println("Accuracy is: " + cLangGameCRBU.getAccuracy());
+            System.out.println("Accuracy on test data set is: " + cLangGameCRBU.getAccuracy());
+            cLangGameCRBU.playGames(trainingDataset, SigmoidFunctionTypes.TANH);
+            System.out.println("Accuracy on training data set is: " + cLangGameCRBU.getAccuracy());;
         } catch (Exception e) {
             Logging.log(Level.SEVERE, e.getMessage());
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 
+    public static void startBagging(String trainingDataset, String testDataset, LearnerTypes lType, int noOfAgents, int samplingRatio) {
+
+        System.out.println("=============BaggingClassifiers Simulation have started================");
+        System.out.println("Agents are being created");
+        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset);
+
+        System.out.println("Bagging training classifiers have started.");
+        BaggingClassifiers baggingClassifiers = new BaggingClassifiers();
+        baggingClassifiers.trainAlgorithm(trainingDataset, lType, noOfAgents, samplingRatio);
+        System.out.println("Training classifiers have finished.");
+        System.out.println("Testing classifiers have started.");
+        try {
+            baggingClassifiers.testAlgorithm(testDataset);
+            System.out.println("Accuracy on test data set is: " + baggingClassifiers.getAccuracy());
+            baggingClassifiers.testAlgorithm(trainingDataset);
+            System.out.println("Accuracy on training data set is: " + baggingClassifiers.getAccuracy());
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        System.out.println("Testing have ended.");
+
+    }
+
+    public static void startSingleClassifierTest(String trainingDataset, String testDataset, LearnerTypes lType, int samplingRatio) {
+        int noOfIterations = 10;
+        System.out.println("=============Single Classifier Simulation have started================");
+        System.out.println("Game Props are test dataset, " + testDataset + " sampling " + samplingRatio + "training " + trainingDataset);
+        SingleClassifier singleClassifier = new SingleClassifier();
+        singleClassifier.trainClassifier(trainingDataset, lType);
+        System.out.println("Classifier is created.");
+        try {
+            singleClassifier.testClassifier(testDataset);
+            System.out.println("Accuracy on test data set: " + singleClassifier.getAccuracy());
+            singleClassifier.testClassifier(trainingDataset);
+            System.out.println("Accuracy on training data set: " + singleClassifier.getAccuracy());
+        } catch (UninitializedClassifierException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void startMajorityVotingSimNTimes(String trainingDataset, String testDataset, LearnerTypes lType, int noOfAgents, int samplingRatio) {
-       int noOfIterations = 10;
-       System.out.println("=============MajorityVoting Simulation have started=================");
-       System.out.println("Agents creation is started");
-       System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset );
-       MajorityVoting mVoting = new MajorityVoting(noOfAgents, samplingRatio);
-       //mVoting.setLearningType(LearnerTypes.NBAYES);
-       mVoting.setLearningType(lType);
-       mVoting.createAgentsWSampled(trainingDataset);
-       System.out.println("Agents are created");
-       System.out.println("The simulation has started");
-       double accuracy = 0.0;
-       for (int i = 0; i < noOfIterations; i++){
-           mVoting.startSimulation(testDataset);
-           accuracy += mVoting.getAccuracy();
-       }
-       accuracy /= noOfIterations;
-       System.out.println("Accuracy percentage is :" + accuracy);
-       System.out.println("The simulation has ended");
-   }
+        int noOfIterations = 10;
+        System.out.println("=============MajorityVoting Simulation have started=================");
+        System.out.println("Agents creation is started");
+        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset);
+        MajorityVoting mVoting = new MajorityVoting(noOfAgents, samplingRatio);
+        //mVoting.setLearningType(LearnerTypes.NBAYES);
+        mVoting.setLearningType(lType);
+        mVoting.createAgentsWSampled(trainingDataset);
+        System.out.println("Agents are created");
+        System.out.println("The simulation has started");
+        double accuracy = 0.0;
+        for (int i = 0; i < noOfIterations; i++) {
+            mVoting.startSimulation(testDataset);
+            accuracy += mVoting.getAccuracy();
+        }
+        accuracy /= noOfIterations;
+        System.out.println("Accuracy percentage is :" + accuracy);
+        System.out.println("The simulation has ended");
+    }
 
     public static void startBasicLanguageGameNTimes(String trainingDataset, String testDataset, LearnerTypes lType, int noOfAgents, int samplingRatio, boolean useBeliefUpdates) {
         int noOfIterations = 10;
         System.out.println("=============CategorizationGame Simulation have started================");
         System.out.println("Agents are being created");
-        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset );
+        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset);
         CategorizationGame bLangGame = new CategorizationGame(noOfAgents, samplingRatio);
         bLangGame.setUseBeliefUpdates(true);
         //bLangGame.setLearningType(LearnerTypes.NBAYES);
@@ -133,7 +182,7 @@ public class ThesisTests {
         double accuracy = 0.0;
         try {
             //System.out.println("The game has started");
-            for(int i = 0; i < noOfIterations; i++){
+            for (int i = 0; i < noOfIterations; i++) {
                 bLangGame.playGames(testDataset, SigmoidFunctionTypes.NONE);
                 accuracy += bLangGame.getAccuracy();
             }
@@ -150,7 +199,7 @@ public class ThesisTests {
         int noOfIterations = 10;
         System.out.println("=============ConfidenceLanguageGame Simulation have started================");
         System.out.println("Agents are being created");
-        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset );
+        System.out.println("Game Props are: AgNo: " + noOfAgents + " test dataset" + testDataset + " sampling " + samplingRatio + "training " + trainingDataset);
         CategorizationGameCRBU cLangGameCRBU = new CategorizationGameCRBU(noOfAgents, samplingRatio);
         cLangGameCRBU.setUseBeliefUpdates(useBeliefUpdates);
         cLangGameCRBU.setNoOfAgents(noOfAgents);
@@ -162,7 +211,7 @@ public class ThesisTests {
         double accuracy = 0.0;
         try {
             //System.out.println("The game has started");
-            for(int i = 0; i < noOfIterations; i++){
+            for (int i = 0; i < noOfIterations; i++) {
                 cLangGameCRBU.playGames(testDataset, SigmoidFunctionTypes.NONE);
                 accuracy += cLangGameCRBU.getAccuracy();
             }
@@ -175,27 +224,35 @@ public class ThesisTests {
         System.out.println("Averaged Accuracy is: " + accuracy);
     }
 
-    public static void mnistTests(LearnerTypes lType){
+
+    public static void mnistTests(LearnerTypes lType) {
         String trainingDataset = "/home/caglar/Datasets/mnist/mnist_train_40_sampled.arff";
         String testDataset = "/home/caglar/Datasets/mnist/mnist_test_40_sampled.arff";
         int noOfAgents = 10;
         int samplingRatio = 20;
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        startWeightedMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        startBagging(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        startSingleClassifierTest(trainingDataset, testDataset, lType, samplingRatio);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
     }
 
-    public static void gtvsTests(LearnerTypes lType){
+    public static void gtvsTests(LearnerTypes lType) {
         String trainingDataset = "/home/caglar/Datasets/gtvs/Day1_50.TCP.arff";
         String testDataset = "/home/caglar/Datasets/gtvs/Day2_50.TCP.arff";
         int noOfAgents = 10;
         int samplingRatio = 20;
+
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        startWeightedMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        startBagging(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        startSingleClassifierTest(trainingDataset, testDataset, lType, samplingRatio);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
     }
 
-    public static void segmentationTests(LearnerTypes lType){
+    public static void segmentationTests(LearnerTypes lType) {
         String trainingDataset = "/home/caglar/Datasets/segment/segment-challenge.arff";
         String testDataset = "/home/caglar/Datasets/segment/segment-test.arff";
         int noOfAgents = 10;
@@ -206,11 +263,31 @@ public class ThesisTests {
 
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startWeightedMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
-        //startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
+        startBagging(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        startSingleClassifierTest(trainingDataset, testDataset, lType, samplingRatio);
+        startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
     }
 
-    public static void segmentationIncSamplingTests(LearnerTypes lType){
+
+    public static void letterTests(LearnerTypes lType) {
+        String trainingDataset = "/home/caglar/Datasets/letter/letter_train.arff";
+        String testDataset = "/home/caglar/Datasets/letter/letter_test2.arff";
+        int noOfAgents = 10;
+        int samplingRatio = 20;
+        //startMajorityVotingSimNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        //startBasicLanguageGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
+        //startConfidenceLangGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
+
+        startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        startWeightedMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        startBagging(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
+        startSingleClassifierTest(trainingDataset, testDataset, lType, samplingRatio);
+        startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
+        startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
+    }
+
+    public static void segmentationIncSamplingTests(LearnerTypes lType) {
         String trainingDataset = "/home/caglar/Datasets/segment/segment-challenge.arff";
         String testDataset = "/home/caglar/Datasets/segment/segment-test.arff";
         int noOfAgents = 10;
@@ -241,7 +318,7 @@ public class ThesisTests {
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, 25, true);
     }
 
-    public static void segmentationIncAgentTests(LearnerTypes lType){
+    public static void segmentationIncAgentTests(LearnerTypes lType) {
         String trainingDataset = "/home/caglar/Datasets/segment/segment-challenge.arff";
         String testDataset = "/home/caglar/Datasets/segment/segment-test.arff";
         int noOfAgents = 5;
@@ -250,26 +327,26 @@ public class ThesisTests {
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
 
-        noOfAgents +=5;
-        startMajorityVotingSim(trainingDataset, testDataset, lType,noOfAgents, samplingRatio);
+        noOfAgents += 5;
+        startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
 
-        noOfAgents +=5;
+        noOfAgents += 5;
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
-        noOfAgents +=5;
+        noOfAgents += 5;
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
-        noOfAgents +=5;
-        startMajorityVotingSim(trainingDataset, testDataset,lType, noOfAgents, samplingRatio);
+        noOfAgents += 5;
+        startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGame(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
     }
 
-    public static void segmentationIncAgentTests10Times(LearnerTypes lType){
+    public static void segmentationIncAgentTests10Times(LearnerTypes lType) {
         String trainingDataset = "/home/caglar/Datasets/segment/segment-challenge.arff";
         String testDataset = "/home/caglar/Datasets/segment/segment-test.arff";
         int noOfAgents = 5;
@@ -277,25 +354,25 @@ public class ThesisTests {
         startMajorityVotingSimNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
-        noOfAgents +=5;
+        noOfAgents += 5;
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
-        noOfAgents +=5;
+        noOfAgents += 5;
         startMajorityVotingSimNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
-        noOfAgents +=5;
+        noOfAgents += 5;
         startMajorityVotingSimNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
-        noOfAgents +=5;
+        noOfAgents += 5;
         startMajorityVotingSim(trainingDataset, testDataset, lType, noOfAgents, samplingRatio);
         startBasicLanguageGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
         startConfidenceLangGameNTimes(trainingDataset, testDataset, lType, noOfAgents, samplingRatio, true);
     }
 
-    public static void segmentationIncSamplingTests10Times(LearnerTypes lType){
+    public static void segmentationIncSamplingTests10Times(LearnerTypes lType) {
         String trainingDataset = "/home/caglar/Datasets/segment/segment-challenge.arff";
         String testDataset = "/home/caglar/Datasets/segment/segment-test.arff";
         int noOfAgents = 10;
@@ -321,13 +398,22 @@ public class ThesisTests {
         startConfidenceLangGameNTimes(trainingDataset, testDataset, lType, noOfAgents, 25, true);
     }
 
-    public static void main(String args[]){
-        mnistTests(LearnerTypes.NBAYES);
-        //gtvsTests(LearnerTypes.C45);
+    public static void combinedDataSetTests(LearnerTypes learnerTypes) {
+        mnistTests(learnerTypes);
+        gtvsTests(learnerTypes);
+        segmentationTests(learnerTypes);
+    }
+
+    public static void main(String args[]) {
+        letterTests(LearnerTypes.C45);
         //segmentationTests(LearnerTypes.C45);
-        //segmentationIncSamplingTests();
-        //segmentationIncAgentTests();
-        //segmentationIncAgentTests10Times();
-        //segmentationIncSamplingTests10Times();
+        //combinedDataSetTests(LearnerTypes.C45);
+        //combinedDataSetTests(LearnerTypes.SVM);
+        //combinedDataSetTests(LearnerTypes.RBFNET);
+        //combinedDataSetTests(LearnerTypes.NBAYES);
+        //segmentationIncSamplingTests(LearnerTypes.C45);
+        //segmentationIncAgentTests(LearnerTypes.C45);
+        //segmentationIncAgentTests10Times(LearnerTypes.C45);
+        //segmentationIncSamplingTests10Times(LearnerTypes.C45);
     }
 }

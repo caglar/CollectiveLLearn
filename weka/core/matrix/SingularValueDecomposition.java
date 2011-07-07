@@ -448,7 +448,7 @@ public class SingularValueDecomposition
         }
         break;
 
-        // Convergence.
+        // ConvergenceCriterion.
 
         case 4: {
 
