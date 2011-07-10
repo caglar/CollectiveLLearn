@@ -85,7 +85,6 @@ public class CategorizationGameCRBU extends CategorizationGame {
             Instance currentContext;
             CategoricalComm currentClassVal = null;
 
-            //System.out.println("Play games!!");
             for (int i = 0; i < noOfTestInstances; i++) {
                 converge.emptyTable();
                 currentContext = testInstances.get(i);
@@ -117,18 +116,9 @@ public class CategorizationGameCRBU extends CategorizationGame {
                 prepareForNewGame();
             }
 
-            //System.out.println("Total Number of failures:" + noOfFails);
-            //System.out.println("Total Number of successes:" + noOfSuccess);
-
             double avgTime = (double)(noOfFails+noOfSuccess)/(double)noOfTestInstances;
-            //System.out.println("Average time: " + avgTime);
-
             int noOfTestEx = testInstances.size();
 
-            /*for(int i = 0; i < this.NoOfAgents; i++){
-                System.out.println("Accuracy for agent " + i + ": " + agPerf.getAccuracyForSpecificAgent(i, noOfTestEx));
-            } */
-            //System.out.println(bcEval.getPerformanceMetrics());
             Accuracy = bcEval.getAccuracyPercent();
         }
     }

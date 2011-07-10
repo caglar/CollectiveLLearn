@@ -25,7 +25,7 @@ public class ScaleFreeNetworks implements Network
     public ScaleFreeNetworks(int noOfNodes, int noOfEdges){
         NoOfEdges = noOfEdges;
         NoOfNodes = noOfNodes;
-        SmallWorldNetwork = BarabasiAlbertGenerator <GraphEvent.Vertex, GraphEvent.Edge>();
+        //SmallWorldNetwork = BarabasiAlbertGenerator <GraphEvent.Vertex, GraphEvent.Edge>();
     }
 
     @Override
@@ -34,7 +34,9 @@ public class ScaleFreeNetworks implements Network
     }
 
     @Override
-    public void setAgentsOnNetwork(ArrayList<Agent> agentList) {
+    public void placeAgentsOnNetwork(ArrayList<Agent> agentList) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
+
+
 }

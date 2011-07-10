@@ -10,6 +10,7 @@ import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 
+import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -175,6 +176,13 @@ public class WeightedSampling implements Partitioner {
         Instances data = FileLoaderFactory.loadFile(dataset);
         result = doSampling(data);
         return result;
+    }
+
+    public InstancesList getARandomPartition(Instances data, double samplingRatio) {
+        SamplingRatio = samplingRatio;
+        NoOfPartitions = 1;
+        InstancesList iList = doSampling(data)[0];
+        return iList;
     }
 
     public ArrayList<Attribute> getAList() {

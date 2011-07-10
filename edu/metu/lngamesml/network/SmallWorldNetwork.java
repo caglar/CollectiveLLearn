@@ -31,7 +31,7 @@ public class SmallWorldNetwork implements Network
     public SmallWorldNetwork(int noOfNodes, int noOfEdges){
         NoOfEdges = noOfEdges;
         NoOfNodes = noOfNodes;
-        SmallWorldNetwork = KleinbergSmallWorldGenerator<GraphEvent.Vertex, GraphEvent.Edge>();
+        //SmallWorldNetwork = KleinbergSmallWorldGenerator<GraphEvent.Vertex, GraphEvent.Edge>();
     }
 
     @Override
@@ -40,7 +40,9 @@ public class SmallWorldNetwork implements Network
     }
 
     @Override
-    public void setAgentsOnNetwork(ArrayList<Agent> agentList) {
+    public void placeAgentsOnNetwork(ArrayList<Agent> agentList) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
+
+
 }

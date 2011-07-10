@@ -19,6 +19,7 @@ import edu.metu.lngamesml.stats.nosql.Game;
 import edu.metu.lngamesml.stats.nosql.game.AgentStat;
 import edu.metu.lngamesml.stats.nosql.game.RunningAgentStat;
 import edu.metu.lngamesml.stats.nosql.game.Stat;
+import edu.metu.lngamesml.stats.sqllite.game.RunningStat;
 import edu.metu.lngamesml.utils.log.Logging;
 import edu.metu.lngamesml.utils.random.MersenneTwister;
 import weka.core.Instance;
@@ -39,6 +40,7 @@ import java.util.logging.Level;
 public class CategorizationGame implements LGame {
     private final String GameName = "Categorization Game";
     private Network net;
+    private boolean RunningStatsFlag;
 
     protected int NoOfAgents;
     protected int SamplingRatio;
@@ -55,6 +57,7 @@ public class CategorizationGame implements LGame {
     protected double Accuracy = 0.0;
 
     public CategorizationGame() {
+        RunningStatsFlag = false;
         NoOfAgents = 10;
         SamplingRatio = 40;
         MGame = new Game();
@@ -143,13 +146,6 @@ public class CategorizationGame implements LGame {
                 agent.setId(i);
                 agent.learnFromData(learningData);
                 if (UseConfidences) {
-                    /*int randomIdx = rnd.nextInt(NoOfAgents);
-                    while (randomIdx == i) {
-                        randomIdx = rnd.nextInt(NoOfAgents);
-                    }
-                    Instances validationData = dataList[randomIdx].getInstances();
-                    Confidences[i] = CfEstimator.estimateConfidence(validationData, agent);
-                    */
                     Confidences[i] = agentConfCV(agent, 4, dataList);
                 }
                 Agents.add(i, agent);
@@ -219,8 +215,6 @@ public class CategorizationGame implements LGame {
 
     @Override
     public void playGames(String testDataset, SigmoidFunctionTypes sigmoidFunctionType) throws Exception {
-        System.gc();
-        //StopWatch sWatch = new StopWatch();
         BasicCognitiveAgent bcaSpeaker;
         BasicCognitiveAgent bcaHearer;
         ConvergenceCriterion convergenceCriterion = new ConvergenceCriterion(NoOfAgents);
@@ -239,10 +233,13 @@ public class CategorizationGame implements LGame {
         int noOfFails = 0;
 
         List<RunningAgentStat> rAgentStats = new ArrayList<RunningAgentStat>();
-        //RunningStat rStat = new RunningStat();
-        //Stat stat = new Stat();
+        RunningStat rStat = null;
+        Stat stat = null;
+        if (RunningStatsFlag) {
+            rStat = new RunningStat();
+            stat = new Stat();
+        }
 
-        //sWatch.startTimer();
         setGameProps(testDataset, GameName);
 
         for (int i = 0; i < noOfTestInstances; i++) {
@@ -259,7 +256,9 @@ public class CategorizationGame implements LGame {
                 CategoricalComm hearerCat = bcaHearer.speak(currentContext);
                 if (!speakerCat.equals(hearerCat)) {
                     addFailuresToAgentStats(rAgentStats.get(bcaSpeaker.getId()), rAgentStats.get(bcaHearer.getId()));
-//                    rStat.incrementNoOfFails();
+                    if (RunningStatsFlag) {
+                        rStat.incrementNoOfFails();
+                    }
                     isSuccess = false;
                     convergenceCriterion.balanceTable(speakerCat, hearerCat);
                     if (UseBeliefUpdates) {
@@ -270,7 +269,9 @@ public class CategorizationGame implements LGame {
                     noOfFails++;
                 } else {
                     addSuccessToAgentStats(rAgentStats.get(bcaSpeaker.getId()), rAgentStats.get(bcaHearer.getId()));
-//                    rStat.incrementNoOfSuccesses();
+                    if (RunningStatsFlag){
+                        rStat.incrementNoOfSuccesses();
+                    }
                     if (UseBeliefUpdates) {
                         BeliefUpdaterFactory.init();
                         BeliefUpdaterFactory.updateBeliefs(speakerCat, hearerCat, sigmoidFunctionType, false);
@@ -279,25 +280,17 @@ public class CategorizationGame implements LGame {
                 }
                 //testInstances.remove(currentContext);
                 //rStat.setTimestep(sWatch.getDuration());
-//                rStat.setNoOfItemsProcessed(i);
+                if (RunningStatsFlag) {
+                    rStat.setNoOfItemsProcessed(i);
+                }
                 BGEval.addMeasurements(bcaSpeaker.getId(), bcaHearer.getId(), i, isSuccess);
             }
-            //MGame.addRunningStat(rStat);
-            //addRunningAgentStatsToGame(rAgentStats);
             currentClassVal = convergenceCriterion.getConvergedCategory();
             bcEval.addPerformanceObservation(currentClassVal, currentContext);
-//            rStat.setAccuracy(bcEval.getAccuracyPercent());
             prepareForNewGame();
         }
-        //System.out.println(bcEval.getPerformanceMetrics());
-        //System.out.println("Total Number of failures:" + noOfFails);
-        //System.out.println("Total Number of successes:" + noOfSuccess);
         double avgTime = (double) (noOfFails + noOfSuccess) / (double) noOfTestInstances;
-        //System.out.println("Average time: " + avgTime);
         Accuracy = bcEval.getAccuracyPercent();
-        //addRunningAgentStatsToAgentStats(rAgentStats);
-//        addStatToGame(stat,bcEval.getAccuracyPercent(), rStat.getNoOfFails(), rStat.getNoOfSuccesses());
-        //sWatch.stopTimer();
     }
 
     public BasicGameEvaluator getBasicGameEval() {
@@ -305,6 +298,10 @@ public class CategorizationGame implements LGame {
             BGEval = new BasicGameEvaluator(0, 0);
         }
         return BGEval;
+    }
+
+    public void enableRunningStatsFlag(boolean runningStatsFlag) {
+        RunningStatsFlag = runningStatsFlag;
     }
 
     public double getAccuracy() {

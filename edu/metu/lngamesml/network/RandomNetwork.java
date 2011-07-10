@@ -25,7 +25,7 @@ public class RandomNetwork implements Network {
     public RandomNetwork(int noOfNodes, int noOfEdges){
         NoOfEdges = noOfEdges;
         NoOfNodes = noOfNodes;
-        RandomNetwork = MixedRandomGraphGenerator<GraphEvent.Vertex, GraphEvent.Edge>();
+        //RandomNetwork = MixedRandomGraphGenerator<GraphEvent.Vertex, GraphEvent.Edge>();
     }
     public Agent pickAgent(){
           Agent ag = null;
@@ -34,7 +34,7 @@ public class RandomNetwork implements Network {
     }
 
     @Override
-    public void setAgentsOnNetwork(ArrayList<Agent> agentList) {
+    public void placeAgentsOnNetwork(ArrayList<Agent> agentList) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }
