@@ -16,6 +16,7 @@ import edu.metu.lngamesml.graphs.jung.AnimatedGraphView;
 import edu.metu.lngamesml.graphs.jung.SimpleGraphView;
 import edu.metu.lngamesml.utils.random.MersenneTwister;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import weka.classifiers.Evaluation;
 import weka.classifiers.meta.AdaBoostM1;
 import weka.core.Attribute;
 import weka.core.Instance;

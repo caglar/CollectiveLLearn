@@ -5,6 +5,7 @@ import edu.metu.lngamesml.agents.com.CategoricalComm;
 import edu.metu.lngamesml.agents.learning.SupervisedLearning;
 import edu.metu.lngamesml.agents.memory.LongTermMemory;
 import edu.metu.lngamesml.agents.memory.ShortTermMemory;
+import edu.uci.ics.jung.graph.Graph;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -17,16 +18,28 @@ import weka.core.Instances;
  * To change this template use File | Settings | File Templates.
  */
 public class SupervisedCognitiveAgent extends Agent {
+
     private SupervisedLearning LearningAlgorithm = null;
     private ShortTermMemory STM = new ShortTermMemory();
     private LongTermMemory LTM = new LongTermMemory();
     private int id;
 
     public SupervisedCognitiveAgent(LearnerTypes learnerType, String []options) {
+        super(null);
         setLearningType(learnerType, options);
     }
 
+    public SupervisedCognitiveAgent(Graph<Agent, String> graph, LearnerTypes learnerType, String []options) {
+        super(graph);
+        setLearningType(learnerType, options);
+    }
+
+    public SupervisedCognitiveAgent(Graph<Agent, String> graph) {
+        super(graph);
+    }
+
     public SupervisedCognitiveAgent() {
+        super(null);
     }
 
     @Override
@@ -73,6 +86,10 @@ public class SupervisedCognitiveAgent extends Agent {
 
     public int getId() {
         return id;
+    }
+
+    public void forgetFocusedCat(){
+        STM.resetMemory();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package edu.metu.lngamesml.core;
 
+import sun.misc.Sort;
 import weka.core.Instance;
 
 import java.util.Comparator;
@@ -12,7 +13,8 @@ import java.util.Comparator;
  * To change this template use File | Settings | File Templates.
  */
 public class InstanceComparator implements Comparator<Instance> {
-    //Ascending Order
+
+    //Sort in descending order
     @Override
     public int compare(Instance instance1, Instance instance2) {
         if (instance1.weight() < instance2.weight())

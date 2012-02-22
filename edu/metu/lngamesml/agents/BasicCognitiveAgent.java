@@ -4,6 +4,7 @@ import edu.metu.lngamesml.agents.com.CategoricalComm;
 import edu.metu.lngamesml.agents.learning.SupervisedLearning;
 import edu.metu.lngamesml.agents.memory.ShortTermMemory;
 import edu.metu.lngamesml.env.Objects;
+import edu.uci.ics.jung.graph.Graph;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -23,11 +24,23 @@ public class BasicCognitiveAgent extends Agent {
     private Objects Objs = new Objects();
     private int id;
 
-    public BasicCognitiveAgent(LearnerTypes learnerType, String []options) {
+    public BasicCognitiveAgent(Graph<Agent, String> graph, LearnerTypes learnerType, String []options) {
+        super(graph);
         setLearningType(learnerType, options);
     }
 
-    public BasicCognitiveAgent() {}
+    public BasicCognitiveAgent(LearnerTypes learnerType, String []options) {
+        super(null);
+        setLearningType(learnerType, options);
+    }
+
+    public BasicCognitiveAgent(Graph<Agent, String> graph) {
+        super(graph);
+    }
+
+    public BasicCognitiveAgent() {
+        super(null);
+    }
 
     @Override
     public void setLearningType(LearnerTypes learningTechnique, String []options) {
@@ -44,6 +57,10 @@ public class BasicCognitiveAgent extends Agent {
         } else {
             LearningAlgorithm.trainClassifier(insts);
         }
+    }
+
+    public void forgetFocusedCat(){
+        STM.resetMemory();
     }
 
     @Override

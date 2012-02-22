@@ -64,6 +64,39 @@ public class MiscUtils {
         return agreements;
     }
 
+    public static double fsum(double arr[]) {
+        double sum = 0.0;
+        for (double val : arr) {
+            sum += val;
+        }
+        return sum;
+    }
+
+    public static double[] normalize(double arr[]) {
+        double sum = fsum(arr);
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = arr[i] / sum;
+        }
+        return arr;
+    }
+
+    public static double[] revNormalize(double arr[]) {
+        arr = normalize(arr);
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = Math.tanh(arr[i]);
+        }
+        return arr;
+    }
+
+    public static double dmax(double[] t) {
+        double maximum = t[0];   // start with the first value
+        for (int i = 1; i < t.length; i++) {
+            if (t[i] > maximum) {
+                maximum = t[i];   // new maximum
+            }
+        }
+        return maximum;
+    }//end method max
     //Borrowed from: http://www.javaworld.com/javaworld/javatips/jw-javatip76.html?page=2
     // returns a deep copy of an object
 
@@ -82,12 +115,10 @@ public class MiscUtils {
             ois = new ObjectInputStream(bin);                  // F
             // return the new object
             return ois.readObject(); // G
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Exception in ObjectCloner = " + e);
             throw (e);
-        }
-        finally {
+        } finally {
             oos.close();
             ois.close();
         }

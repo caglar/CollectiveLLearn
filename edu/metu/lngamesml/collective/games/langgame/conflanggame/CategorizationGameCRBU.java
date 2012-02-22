@@ -29,7 +29,7 @@ public class CategorizationGameCRBU extends CategorizationGame {
     private int noOfSuccess = 0;
     private int noOfFails = 0;
     private double scalingPow = 2;
-
+    private boolean ReverseUpdateOrder = false;
 
     public CategorizationGameCRBU() {
         super();
@@ -69,6 +69,10 @@ public class CategorizationGameCRBU extends CategorizationGame {
         Agents.get(sAgent.getId()).hear(sCat);
     }
 
+    public void reverseAgentUpdates(boolean isInverseOrder){
+        this.ReverseUpdateOrder = isInverseOrder;
+    }
+
     @Override
     public void playGames(String testDataset, SigmoidFunctionTypes sigmoidFunctionType) throws Exception {
         if (!this.UseConfidences) {
@@ -79,6 +83,10 @@ public class CategorizationGameCRBU extends CategorizationGame {
             BasicCognitiveAgent bcaAgent2;
             int noOfTestInstances = testInstances.numInstances();
             BasicClassificationEvaluator bcEval = new BasicClassificationEvaluator();
+
+            noOfSuccess = 0;
+            noOfFails = 0;
+
             if (converge == null) {
                 converge = new ConvergenceCriterion(NoOfAgents);
             }
@@ -99,7 +107,12 @@ public class CategorizationGameCRBU extends CategorizationGame {
                     double confidence1 = cat1.getConfidence() * Math.pow(Confidences[bcaAgent1.getId()], scalingPow);
                     double confidence2 = cat2.getConfidence() * Math.pow(Confidences[bcaAgent2.getId()], scalingPow);
                     if (confidence1 > confidence2) {
-                        updateCommunication(bcaAgent1, bcaAgent2, cat1, cat2, sigmoidFunctionType);
+                        if (!ReverseUpdateOrder) {
+                            updateCommunication(bcaAgent1, bcaAgent2, cat1, cat2, sigmoidFunctionType);
+                        } else {
+                            updateCommunication(bcaAgent2, bcaAgent1, cat2, cat1, sigmoidFunctionType);
+                        }
+
                     } else if (confidence1 == confidence2) {
                         int speakerCatNo = ((new Random(System.nanoTime()).nextInt()) % 2);
                         if (speakerCatNo == 0){
@@ -108,7 +121,11 @@ public class CategorizationGameCRBU extends CategorizationGame {
                             updateCommunication(bcaAgent2, bcaAgent1, cat2, cat1, sigmoidFunctionType);
                         }
                     } else {
-                        updateCommunication(bcaAgent2, bcaAgent1, cat2, cat1, sigmoidFunctionType);
+                        if (!ReverseUpdateOrder) {
+                            updateCommunication(bcaAgent2, bcaAgent1, cat2, cat1, sigmoidFunctionType);
+                        } else {
+                            updateCommunication(bcaAgent1, bcaAgent2, cat1, cat2, sigmoidFunctionType);
+                        }
                     }
                 }
                 currentClassVal = converge.getConvergedCategory();
@@ -117,6 +134,8 @@ public class CategorizationGameCRBU extends CategorizationGame {
             }
 
             double avgTime = (double)(noOfFails+noOfSuccess)/(double)noOfTestInstances;
+            System.out.println("Fail/Success Rate " + (double)((double)noOfFails/(double)noOfSuccess));
+            System.out.println("Average dialogs per example: " + avgTime );
             int noOfTestEx = testInstances.size();
 
             Accuracy = bcEval.getAccuracyPercent();

@@ -6,6 +6,7 @@ import edu.metu.lngamesml.agents.LearnerTypes;
 import edu.metu.lngamesml.agents.beliefs.BeliefUpdaterFactory;
 import edu.metu.lngamesml.agents.beliefs.SigmoidFunctionTypes;
 import edu.metu.lngamesml.agents.com.CategoricalComm;
+import edu.metu.lngamesml.collective.IteratedLearningModel;
 import edu.metu.lngamesml.collective.games.LGame;
 import edu.metu.lngamesml.core.InstancesList;
 import edu.metu.lngamesml.criterions.ConvergenceCriterion;
@@ -155,6 +156,13 @@ public class CategorizationGame implements LGame {
         }
     }
 
+    public void createILMAgents(String trainingDataset) {
+        IteratedLearningModel iteratedLearningModel = new IteratedLearningModel(NoOfAgents, SamplingRatio, LType);
+        iteratedLearningModel.startModel(trainingDataset);
+        Confidences = iteratedLearningModel.getConfidences();
+        Agents = iteratedLearningModel.getAgents();
+    }
+
     public void setLearningType(LearnerTypes lType) {
         LType = lType;
     }
@@ -290,6 +298,8 @@ public class CategorizationGame implements LGame {
             prepareForNewGame();
         }
         double avgTime = (double) (noOfFails + noOfSuccess) / (double) noOfTestInstances;
+        System.out.println("Fail/Success Rate " + (double)((double)noOfFails/(double)noOfSuccess));
+        System.out.println("Average dialogs per example: " + avgTime );
         Accuracy = bcEval.getAccuracyPercent();
     }
 

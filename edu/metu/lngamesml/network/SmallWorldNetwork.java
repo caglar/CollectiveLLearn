@@ -1,11 +1,18 @@
 package edu.metu.lngamesml.network;
 
 import edu.metu.lngamesml.agents.Agent;
+import edu.metu.lngamesml.graphs.jung.SimpleAgentFactory;
+import edu.metu.lngamesml.graphs.jung.SimpleGraphFactory;
+import edu.metu.lngamesml.graphs.jung.SimpleStringFactory;
+import edu.uci.ics.jung.algorithms.generators.GraphGenerator;
+import edu.uci.ics.jung.algorithms.generators.random.BarabasiAlbertGenerator;
 import edu.uci.ics.jung.algorithms.generators.random.KleinbergSmallWorldGenerator;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.event.GraphEvent;
+import org.apache.commons.collections15.Factory;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,14 +31,26 @@ import java.util.ArrayList;
  */
 public class SmallWorldNetwork implements Network
 {
-    private int NoOfNodes;
-    private int NoOfEdges;
-    Graph<GraphEvent.Vertex, GraphEvent.Edge> SmallWorldNetwork;
 
-    public SmallWorldNetwork(int noOfNodes, int noOfEdges){
-        NoOfEdges = noOfEdges;
-        NoOfNodes = noOfNodes;
-        //SmallWorldNetwork = KleinbergSmallWorldGenerator<GraphEvent.Vertex, GraphEvent.Edge>();
+    private int mClusteringExponent;
+    private int mNoOfVertices;
+    private Graph<Agent, String> SmallWorldNetwork;
+
+    public SmallWorldNetwork(int noOfVertices, int edgesToAttach, int noOfIterations, Set<Agent> seedVertices){
+        mNoOfVertices = noOfVertices;
+        mClusteringExponent = 2;
+
+        Factory<Graph<Agent, String>> graphFactory = new SimpleGraphFactory();
+        Factory<Agent> agentFactory = new SimpleAgentFactory(graphFactory);
+
+        GraphGenerator<Agent, String> scaleFreeGraphGen = new KleinbergSmallWorldGenerator<Agent, String>(graphFactory, agentFactory, new SimpleStringFactory(), mNoOfVertices, mClusteringExponent);
+        SmallWorldNetwork = scaleFreeGraphGen.create();
+        //SmallWorldNetwork = BarabasiAlbertGenerator <GraphEvent.Vertex, GraphEvent.Edge>();
+    }
+
+    public Agent pickAgents() {
+        SmallWorldNetwork.getEdges();
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

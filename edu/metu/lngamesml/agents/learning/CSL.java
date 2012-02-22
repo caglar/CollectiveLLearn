@@ -1,5 +1,7 @@
 package edu.metu.lngamesml.agents.learning;
 
+import edu.metu.lngamesml.core.DoubleVector;
+
 /**
  * Created by IntelliJ IDEA.
  * User: caglar
@@ -11,5 +13,7 @@ package edu.metu.lngamesml.agents.learning;
 //Nonparametric bayesian learning.
 
 public class CSL {
-
+    protected double mPriorDists[];
+    protected double mPosteriorDists[];
+    protected DoubleVector mCrossSituationalFreq;
 }
